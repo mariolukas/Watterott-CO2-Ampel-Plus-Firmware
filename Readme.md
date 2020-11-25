@@ -26,7 +26,7 @@ Mit diesem Netz verbindet man den Rechner. Bei der Passwort Abfrage gibt man als
 
 Wenn der Rechner mit dem Netz der Ampel verbunden ist kann man mit dem Browser über die Adresse ```http://192.169.1.1``` die Einstellungen der Ampel erreichen.
 
-![CO2 Ampel Einstellungen](docs/images/ap_Mode.png)
+![CO2 Ampel Einstellungen](docs/images/AP_Mode.png)
 
 Hier genügt es die SSID und das Passwort für das eigene WLAN einzutragen und anschließend zu speichern. Die Ampel startet dann neu und wird mit dem Heimnetz verbunden. Die IP Adresse der Ampel kann man zum Beispiel über den Router herausfinden oder über einen IP Scanner wie z.B. [https://www.advanced-ip-scanner.com/de/](https://www.advanced-ip-scanner.com/de/) (Mac Benutzer können [LanScan](https://apps.apple.com/de/app/lanscan/id472226235?mt=12) verwenden.)
 
