@@ -8,7 +8,7 @@ Dieses Repository beinhaltet die Firmware für die Watterott Co2 Ampel Plus, wel
 
 Die Ampel verfügt über zwei Tasten. Die von der USB Buchse aus links gelegene Taste ist der Reset Taster, die rechte die Mode Taste. Die weiteren Funktionen sind im folgenden näher beschrieben.
 
-![Co2 Ampel Pro Tastenbelegung](docs/images/tastenbelegung.png)
+![Co2 Ampel Pro Tastenbelegung](docs/images/Tastenbelegung.png)
 
 ### Startvorgang und Normalmodus
 Nachdem Einschalten leuchtet die Ampel zunächst weiß. Zu diesem Zeitpunkt wird unter anderem der CO2 Sensor Initialisiert. 
