@@ -252,7 +252,7 @@ void wifi_handle_client(){
             client.print(wpa_root_html_header);
             client.print(cssampel);
             client.print(wpa_root_html_middle);
-            client.print("<div class=\"box\"><h1>Ampel Status</h1>");
+            client.print("<div class=\"box\"><h1>CO2 Ampel Status</h1>");
             client.print("<span class=\"css-ampel"); 
               int ampel = get_co2();
               if(ampel < START_GELB) {
@@ -273,7 +273,13 @@ void wifi_handle_client(){
             client.print(" &ordm;C<br>Luftfeuchtigkeit: ");
             client.print(get_humidity());
             client.print(" %<br>Helligkeit: ");
-            client.print(get_brightness());
+            int brgt = get_brightness();
+            if(brgt == 1024){
+              client.print("--");
+            } else {
+              client.print(brgt);  
+            }
+            
             client.print("<br>");  
             client.print("<br>");   
             client.print("MQTT Broker ist ");
@@ -281,6 +287,10 @@ void wifi_handle_client(){
               client.print("nicht ");  
             }
             client.print("verbunden."); 
+            client.print("<br>");
+            client.print("<br>");
+            client.print("Firmware: ");
+            client.println(VERSION);
             client.print("<br>");
             client.print("</div>");                  
             client.print(wpa_root_html_footer);
@@ -343,7 +353,13 @@ void wifi_handle_client(){
             
             //client.print("<div class=\"btnbox\"><button onclick=\"window.location.href='/selftest'\"  class=\"btn\">Selftest</button></div>");
             //client.print("<div class=\"btnbox\"><button onclick=\"window.location.href='/calibrate'\" class=\"btn\">Calibration</button></div>");
-            client.print("<input type=submit class=btn value=\"Speichern und Neustart\"></form>");
+            client.print("<input type=submit class=btn value=\"Speichern und Neustart\">");
+            client.print("<br><br>");
+            client.print("Firmware: ");
+            client.println(VERSION);
+            client.print("</form>");
+        
+
             client.print(ap_root_html_footer);
             client.println();
           }

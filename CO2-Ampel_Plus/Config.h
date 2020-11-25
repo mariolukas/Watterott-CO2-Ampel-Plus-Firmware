@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define VERSION "v1.0.1"
+
 #define WS2312_NUMBER_OF_PIXELS 4
 // STATES
 #define WIFI_MODE_AP_INIT 90
