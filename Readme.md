@@ -75,7 +75,7 @@ Anschließend kann das CO2 Ampel Board über den Arduino Board Manager installie
 
 ![Screenshot of Grafana Monitoring](docs/images/install_bsp.png)
 
-Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufgelisteten Bibliotheken installiert sind, lässt dich der Quellcode kompilieren.
+Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufgelisteten Bibliotheken installiert sind, lässt sich der Quellcode kompilieren.
 
 ### Benötigte Bibliotheken
 
