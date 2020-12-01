@@ -24,7 +24,7 @@ Anschließend öffnet die Ampel einen Access Point. Unter den vom Rechner gefund
 
 Mit diesem Netz verbindet man den Rechner. Bei der Passwort-Abfrage gibt man als Passwort ```co2admin```ein (sofern das Passwort nicht bereits geändert wurde).
 
-Wenn der Rechner mit dem Netz der Ampel verbunden ist, kann man mit dem Browser über die Adresse ```http://192.169.1.1``` die Einstellungen der Ampel erreichen.
+Wenn der Rechner mit dem Netz der Ampel verbunden ist, kann man mit dem Browser über die Adresse ```http://192.168.1.1``` die Einstellungen der Ampel erreichen.
 
 ![CO2 Ampel Einstellungen](docs/images/AP_Mode.png)
 
