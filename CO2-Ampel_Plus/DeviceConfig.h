@@ -9,6 +9,7 @@ typedef struct  {
   char ap_password[40];
   int mqtt_broker_port;
   char mqtt_broker_address[20];
+  char mqtt_topic[20];
   char ampel_name[40];
   float temperature_offset;
 } device_config_t;

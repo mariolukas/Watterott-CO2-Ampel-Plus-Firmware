@@ -54,6 +54,11 @@
 #define START_BUZZER       1600 //>=1600ppm
 */
 #define AP_SSID "CO2 Ampel"
+
+#define DEVICE_NAME "Ampel_1"
+
+#define MQTT_BROKER_PORT 1883
+#define MQTT_BROKER_ADDR "127.0.0.1"
 #define MQTT_TOPIC "sensors"
 
 #define MQTT_SENSOR_CO2 888

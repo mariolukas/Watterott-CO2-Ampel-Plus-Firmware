@@ -6,8 +6,6 @@
 WiFiClient wifi_client; 
 MqttClient mqttClient(wifi_client);
 
-const char topic[]  = "/sensors";
-
 bool mqtt_connect(){
     device_config_t cfg = config_get_values();
     
@@ -27,7 +25,7 @@ void mqtt_send_value(int value_type, int value){
        if(mqttClient.connected()){
           
             device_config_t cfg = config_get_values();
-            mqttClient.beginMessage(MQTT_TOPIC);
+            mqttClient.beginMessage(cfg.mqtt_topic);
             
             switch(value_type){
             case MQTT_SENSOR_CO2:

@@ -14,7 +14,7 @@ bool config_is_initialized(){
 }
 
 void config_set_factory_defaults(){
-  device_config_t _default_config = {1, "", "", WIFI_AP_PASSWORD, 1883, "127.0.0.1", "Ampel_1", 12.0};
+  device_config_t _default_config = {1, "", "", WIFI_AP_PASSWORD, MQTT_BROKER_PORT, MQTT_BROKER_ADDR, MQTT_TOPIC, DEVICE_NAME, TEMPERATURE_OFFSET};
   config_store.write(_default_config); 
 }
 
