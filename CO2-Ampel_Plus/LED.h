@@ -6,7 +6,7 @@ extern byte led_tick;
 //void led_pulse();
 void fill_led_by_led(uint32_t color);
 void led_ack(uint32_t color);
-void led_one_by_one(uint32_t color, byte interval);
+void led_one_by_one(uint32_t color, int interval);
 void led_off();
 void led_test();
 void led_set_color(uint32_t color);
@@ -20,7 +20,7 @@ void led_adjust_brightness(byte brightness);
 
 void led_broker_connection_fail();
 
-void led_blink(uint32_t color, byte intervall);
+void led_blink(uint32_t color, int intervall);
 
 void led_update();
 void led_wpa_connecting_tick(bool is_on);

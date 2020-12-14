@@ -42,7 +42,7 @@ void led_test(){
   analogWrite(PIN_BUZZER, 0);
 }
 
-void led_one_by_one(uint32_t color, byte interval){
+void led_one_by_one(uint32_t color, int interval){
     ws2812.clear();
     ws2812.setPixelColor(led_tick, color);
     if (led_tick == WS2312_NUMBER_OF_PIXELS){
@@ -91,7 +91,7 @@ void led_adjust_brightness(byte brightness){
   led_brightness = brightness;
 }
 
-void led_blink(uint32_t color, byte intervall){
+void led_blink(uint32_t color, int intervall){
 
    ws2812.fill(ws2812.Color(0,0,0), 0, 4);
    //led_set_brightness(led_brightness); 
