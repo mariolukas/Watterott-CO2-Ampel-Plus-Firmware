@@ -98,7 +98,7 @@ int wifi_wpa_connect() {
   } else {
       print_wifi_status();
       server.begin();
-      if(cfg.mqtt_broker_address != "127.0.0.1"){
+      if(strcmp(cfg.mqtt_broker_address, "127.0.0.1")){
            mqtt_connect();
       }
   
