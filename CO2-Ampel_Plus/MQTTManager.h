@@ -3,10 +3,10 @@
 #include "Led.h"
 #include "NetworkManager.h"
 #include <WiFi101.h>
-#include <PubSubClient.h>
+#include <ArduinoMqttClient.h>
 
 bool mqtt_connect();
-void mqtt_send_value(int co2, int temp, int hum, int lux);
+void mqtt_send_value(int value_type, int value);
 bool mqtt_broker_connected();
 
 #endif

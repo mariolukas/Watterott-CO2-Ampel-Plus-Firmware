@@ -198,7 +198,9 @@ void sensor_handler(){
     temp = co2_sensor.getTemperature();
     humi = co2_sensor.getHumidity();
     if (wifi_is_connected()){
-      mqtt_send_value(co2, temp, humi, light);
+      mqtt_send_value(MQTT_SENSOR_CO2, co2);
+      mqtt_send_value(MQTT_SENSOR_TEMP, temp);
+      mqtt_send_value(MQTT_SENSOR_HUM, humi);
     }
     
     show_data();
@@ -240,6 +242,7 @@ void sensor_handle_brightness(){
     if((millis()-t_light) > (LICHT_INTERVALL*1000)){
       t_light = millis();
     light = light_sensor();
+    mqtt_send_value(MQTT_SENSOR_LUX, light);
     if(light < LICHT_DUNKEL) {
         if(dunkel == 0) {
           dunkel = 1;
