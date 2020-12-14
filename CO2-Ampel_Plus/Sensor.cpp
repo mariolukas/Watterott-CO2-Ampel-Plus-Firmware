@@ -183,7 +183,6 @@ void sensor_set_temperature_offset(float offset){
 
 void sensor_handler(){
   unsigned int ampel=0;
-  device_config_t cfg = config_get_values();
   co2_average = (co2_average + co2) / 2; //Berechnung jede Sekunde
 
   #if AMPEL_DURCHSCHNITT > 0

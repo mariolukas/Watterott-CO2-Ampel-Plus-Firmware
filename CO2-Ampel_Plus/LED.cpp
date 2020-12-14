@@ -62,7 +62,7 @@ void led_broker_connection_fail(){
     
 }
 
-void led_ack(uint32_t color){
+void led_ack(){
   for (byte i=0; i<2; i++) {
     ws2812.fill(ws2812.Color(0,0,0), 0, NUMBER_OF_WS2812_LEDS);
     ws2812.setBrightness(255);
