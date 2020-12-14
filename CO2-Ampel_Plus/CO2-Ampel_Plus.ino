@@ -15,10 +15,6 @@
      Die LEDs zeigen dabei den aktuellen CO2-Wert an: gruen bis 499ppm, gelb bis 599ppm, rot ab 600ppm
   5. Nach erfolgreicher Kalibrierung leuchten die LEDs kurz blau und der Buzzer ertoent.
 */
-#if DISPLAY_AUSGABE > 0
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#endif
 #include <Arduino.h>
 #include "Config.h"
 #include "NetworkManager.h"
@@ -34,10 +30,6 @@ const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
 
 Button modeButton(BUTTON_PIN);
-
-#if DISPLAY_AUSGABE > 0
-Adafruit_SSD1306 display(128, 64); //128x64 Pixel
-#endif
 
 int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 

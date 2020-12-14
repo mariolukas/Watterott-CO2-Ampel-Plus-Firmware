@@ -7,6 +7,14 @@
 #include <Wire.h>
 #include <JC_Button.h> 
 #include <SparkFun_SCD30_Arduino_Library.h>
+#if DISPLAY_AUSGABE > 0
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#endif
+
+#if DISPLAY_AUSGABE > 0
+Adafruit_SSD1306 display(128, 64); //128x64 Pixel
+#endif
 
 SCD30 co2_sensor;
 unsigned int co2=STARTWERT, co2_average=STARTWERT;
@@ -145,6 +153,11 @@ void sensor_init(){
   //Wire/I2C
   Wire.begin();
   Wire.setClock(50000); //50kHz, empfohlen fue SCD30
+
+  #if DISPLAY_AUSGABE > 0
+    delay(500); //500ms warten
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3D);
+  #endif
 
   while(co2_sensor.begin(Wire, AUTO_KALIBRIERUNG) == false)
   {
