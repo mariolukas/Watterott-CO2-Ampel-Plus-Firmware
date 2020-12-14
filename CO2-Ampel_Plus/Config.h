@@ -60,6 +60,7 @@
 #define MQTT_BROKER_PORT 1883
 #define MQTT_BROKER_ADDR "127.0.0.1"
 #define MQTT_TOPIC "sensors"
+#define MQTT_LWT_SUBTOPIC "LWT" 
 
 #define MQTT_SENSOR_CO2 888
 #define MQTT_SENSOR_TEMP 889
