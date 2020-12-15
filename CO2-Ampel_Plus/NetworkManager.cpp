@@ -211,6 +211,18 @@ void wifi_handle_client(){
                   cfg.mqtt_broker_port = requestParser.getField("port").toInt();
                 }
 
+                if((requestParser.getField("topic").length() > 0)){
+                  requestParser.getField("topic").toCharArray(cfg.mqtt_topic, 20);
+                }
+
+                if((requestParser.getField("mqttuser").length() > 0)){
+                  requestParser.getField("mqttuser").toCharArray(cfg.mqtt_username, 20);
+                }
+
+                if((requestParser.getField("mqttpass").length() > 0)){
+                  requestParser.getField("mqttpass").toCharArray(cfg.mqtt_password, 20);
+                }
+
                 if((requestParser.getField("ampel").length() > 0)){
                   requestParser.getField("ampel").toCharArray(cfg.ampel_name, 40);
                 }
@@ -326,6 +338,21 @@ void wifi_handle_client(){
             client.print("<label for=port>MQTT Broker Port</label>");
             client.print("<input name=port placeholder='1883' value='");
             client.print(cfg.mqtt_broker_port); 
+            client.print("'>");
+        
+            client.print("<label for=port>MQTT Base Topic</label>");
+            client.print("<input name=topic placeholder='sensors' value='");
+            client.print(cfg.mqtt_topic); 
+            client.print("'>");
+        
+            client.print("<label for=port>MQTT Username</label>");
+            client.print("<input name=mqttuser placeholder='username' value='");
+            client.print(cfg.mqtt_username); 
+            client.print("'>");
+        
+            client.print("<label for=port>MQTT Password</label>");
+            client.print("<input type=password name=mqttpass placeholder='password' value='");
+            client.print(cfg.mqtt_password); 
             client.print("'>");
         
             client.print("<label for=ampel>Ampel Name</label>");

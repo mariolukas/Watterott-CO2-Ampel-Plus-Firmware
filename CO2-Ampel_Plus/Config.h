@@ -61,7 +61,8 @@
 #define MQTT_BROKER_ADDR "127.0.0.1"
 #define MQTT_TOPIC "sensors"
 #define MQTT_LWT_SUBTOPIC "LWT" 
-
+#define MQTT_USERNAME "username"
+#define MQTT_PASSWORD "password"
 #define MQTT_SENSOR_CO2 888
 #define MQTT_SENSOR_TEMP 889
 #define MQTT_SENSOR_HUM 890
@@ -69,6 +70,8 @@
 
 #define NUMBER_OF_WS2812_LEDS 4
 
+#define LIGHT_ENABLED true
+#define BUZZER_ENABLED true
 
 //--- Ampelhelligkeit (LEDs) ---
 #define HELLIGKEIT         180 //1-255 

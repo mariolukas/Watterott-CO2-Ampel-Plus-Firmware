@@ -12,6 +12,10 @@ typedef struct  {
   char mqtt_topic[20];
   char ampel_name[40];
   float temperature_offset;
+  char mqtt_username[20];
+  char mqtt_password[20];
+  bool light_enabled;
+  bool buzzer_enabled;  
 } device_config_t;
 
 void config_set_factory_defaults();

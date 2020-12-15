@@ -14,7 +14,7 @@ bool config_is_initialized(){
 }
 
 void config_set_factory_defaults(){
-  device_config_t _default_config = {1, "", "", WIFI_AP_PASSWORD, MQTT_BROKER_PORT, MQTT_BROKER_ADDR, MQTT_TOPIC, DEVICE_NAME, TEMPERATURE_OFFSET};
+  device_config_t _default_config = {1, "", "", WIFI_AP_PASSWORD, MQTT_BROKER_PORT, MQTT_BROKER_ADDR, MQTT_TOPIC, DEVICE_NAME, TEMPERATURE_OFFSET, MQTT_USERNAME, MQTT_PASSWORD, LIGHT_ENABLED, BUZZER_ENABLED};
   config_store.write(_default_config); 
 }
 
