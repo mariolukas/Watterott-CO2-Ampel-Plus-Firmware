@@ -227,7 +227,15 @@ void wifi_handle_client(){
                   requestParser.getField("ampel").toCharArray(cfg.ampel_name, 40);
                 }
                 
-                /**
+                if((requestParser.getField("buzzer").length() > 0)){
+                  if (requestParser.getField("buzzer") == "false") {
+                    cfg.buzzer_enabled = false;
+                  } else {
+                    cfg.buzzer_enabled = true;
+                  }
+                }
+
+               /**
                  * Reboot if required.
                  */
                 if (reboot){
@@ -374,6 +382,17 @@ void wifi_handle_client(){
             client.print("<input type=password name=ap_pwd placeholder='Passwort' value='");
             client.print(cfg.ap_password);
             client.print("'>");
+            
+            client.print("<label for=buzzer>Buzzer</label>");
+            client.print("<select id=buzzer name=buzzer size=2>");
+            if (cfg.buzzer_enabled) {
+                client.print("<option value=\"true\" selected>Enabled</option>");
+                client.print("<option value=\"false\">Disabled</option>");
+            } else {
+                client.print("<option value=\"true\">Enabled</option>");
+                client.print("<option value=\"false\" selected>Disabled</option>");              
+            };
+            client.print("</select>");
             
             //client.print("<div class=\"btnbox\"><button onclick=\"window.location.href='/selftest'\"  class=\"btn\">Selftest</button></div>");
             //client.print("<div class=\"btnbox\"><button onclick=\"window.location.href='/calibrate'\" class=\"btn\">Calibration</button></div>");
