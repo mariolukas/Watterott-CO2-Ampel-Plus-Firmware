@@ -83,7 +83,7 @@ Es werden zusätzlich die folgenden Bibliotheken benötigt, um das Programm komp
 
 [https://github.com/adafruit/Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
 
-[https://github.com/arduino-libraries/ArduinoMqttClient](https://github.com/arduino-libraries/ArduinoMqttClient)
+[https://github.com/knolleary/pubsubclient](https://github.com/knolleary/pubsubclient)
 
 [https://github.com/JChristensen/JC_Button](https://github.com/JChristensen/JC_Button)
 
