@@ -79,7 +79,7 @@ const char cssampel[] PROGMEM = R"=====(
 }
 )=====";
 const String wpa_root_html_header =
-  F("<html>\
+    F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\
@@ -144,7 +144,7 @@ body {\
 }");
 
 const String wpa_root_html_middle =
- F("</style>\
+    F("</style>\
 <meta charset=\"UTF-8\">\
 <title>CO2 Ampel Wifi AP</title>\
 <meta http-equiv=\"refresh\" content=\"3; URL=/\">\
@@ -152,5 +152,5 @@ const String wpa_root_html_middle =
 <body>");
 
 const String wpa_root_html_footer =
-  F("</body>\
+    F("</body>\
 </html>");

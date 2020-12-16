@@ -4,7 +4,7 @@
  */
 
 const String ap_save_html =
-  F("<html>\
+    F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\
@@ -82,7 +82,7 @@ body {\
  */
 
 const String ap_root_html_header =
-  F("<html>\
+    F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\
@@ -152,5 +152,5 @@ body {\
 <body>");
 
 const String ap_root_html_footer =
-  F("</body>\
+    F("</body>\
 </html>");

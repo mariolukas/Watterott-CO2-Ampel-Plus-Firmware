@@ -2,7 +2,7 @@
 #define DEVICECONFIG_H
 #include <FlashStorage.h>
 
-typedef struct  {
+typedef struct {
   int change_count;
   char wifi_ssid[40];
   char wifi_password[40];
@@ -15,7 +15,7 @@ typedef struct  {
   char mqtt_username[20];
   char mqtt_password[20];
   bool light_enabled;
-  bool buzzer_enabled;  
+  bool buzzer_enabled;
 } device_config_t;
 
 void config_set_factory_defaults();
