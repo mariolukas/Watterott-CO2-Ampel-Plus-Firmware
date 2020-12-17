@@ -76,6 +76,7 @@
 
 #define LIGHT_ENABLED true
 #define BUZZER_ENABLED true
+#define BUZZER_VOLUME 255 / 128
 
 //--- Ampelhelligkeit (LEDs) ---
 #define HELLIGKEIT 180       // 1-255

@@ -9,13 +9,13 @@ void buzzer_init() {
 }
 
 void buzzer_test() {
-  analogWrite(PIN_BUZZER, 255 / 2);  // Buzzer an
+  analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer an
   delay(1000);
   analogWrite(PIN_BUZZER, 0);  // Buzzer aus
 }
 
 void buzzer_ack() {
-  analogWrite(PIN_BUZZER, 255 / 2);  // Buzzer an
+  analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer an
   delay(500);
   analogWrite(PIN_BUZZER, 0);  // Buzzer aus
 }
@@ -23,7 +23,7 @@ void buzzer_ack() {
 void buzzer_on() {
   device_config_t cfg = config_get_values();
   if (cfg.buzzer_enabled) {
-    analogWrite(PIN_BUZZER, 255 / 2);  // Buzzer an
+    analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer an
   }
 }
 
