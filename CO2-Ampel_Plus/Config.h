@@ -56,6 +56,8 @@
 #define START_BUZZER       1600 //>=1600ppm
 */
 #define AP_SSID "CO2 Ampel"
+#define WIFI_WPA_SSID ""
+#define WIFI_WPA_PASSWORD ""
 
 #define DEVICE_NAME "Ampel_1"
 

@@ -15,8 +15,8 @@ bool config_is_initialized() {
 
 void config_set_factory_defaults() {
   device_config_t _default_config = {1,
-                                     "",
-                                     "",
+                                     WIFI_WPA_SSID,
+                                     WIFI_WPA_PASSWORD,
                                      WIFI_AP_PASSWORD,
                                      MQTT_BROKER_PORT,
                                      MQTT_BROKER_ADDR,
