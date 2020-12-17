@@ -16,9 +16,18 @@ bool mqtt_connect() {
   sprintf(willTopic, "%s/%s/%s", cfg.mqtt_topic, cfg.ampel_name,
           MQTT_LWT_SUBTOPIC);
   led_set_color(LED_WHITE);
-  mqttClient.setServer(cfg.mqtt_broker_address, cfg.mqtt_broker_port);
-  if (!mqttClient.connect(cfg.ampel_name, NULL, NULL, willTopic, willQoS,
-                          willRetain, willMessage)) {
+  Serial.print("Connecting to ");
+  Serial.print(cfg.mqtt_broker_address);
+  Serial.print(":");
+  Serial.println(cfg.mqtt_broker_port);
+      mqttClient.setServer(cfg.mqtt_broker_address, cfg.mqtt_broker_port);
+  if (!mqttClient.connect(cfg.ampel_name, cfg.mqtt_username, cfg.mqtt_password,
+                          willTopic, willQoS, willRetain, willMessage)) {
+    Serial.println("Could not connect to server. Configuration: ");
+    Serial.print("  Name: ");
+    Serial.println(cfg.ampel_name);
+    Serial.print("  Username: ");
+    Serial.println(cfg.mqtt_username);
     return false;
   }
   mqttClient.publish(willTopic, "connected");
@@ -38,6 +47,14 @@ void mqtt_send_value(int co2, int temp, int hum, int lux) {
     sprintf(mqttMessage,
             "{\"co2\":\"%i\",\"temp\":\"%i\",\"hum\":\"%i\",\"lux\":\"%i\"}",
             co2, temp, hum, lux);
-    mqttClient.publish(mqttTopic, mqttMessage);
+    if (mqttClient.publish(mqttTopic, mqttMessage)) {
+      Serial.println("Data publication successfull.");
+    } else {
+      Serial.println(
+          "Data publication failed, either connection lost or message too "
+          "large.");
+    };
+  } else {
+    Serial.println("Data publication failed, client is not connected.");
   }
 }
