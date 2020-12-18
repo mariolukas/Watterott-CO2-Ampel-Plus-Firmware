@@ -7,12 +7,12 @@
 #include "DeviceConfig.h"
 #include "Led.h"
 #include "NetworkManager.h"
-#if DISPLAY_AUSGABE > 0
+#if DISPLAY_OUTPUT > 0
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #endif
 
-#if DISPLAY_AUSGABE > 0
+#if DISPLAY_OUTPUT > 0
 Adafruit_SSD1306 display(128, 64);  // 128x64 Pixel
 #endif
 
@@ -25,7 +25,7 @@ static int dunkel = 0;
 
 void show_data(void)  // Daten anzeigen
 {
-#if SERIELLE_AUSGABE > 0
+#if SERIAL_OUTPUT > 0
   Serial.print("co2: ");
   Serial.println(co2);  // ppm
   Serial.print("temp: ");
@@ -40,7 +40,7 @@ void show_data(void)  // Daten anzeigen
   Serial.println();
 #endif
 
-#if DISPLAY_AUSGABE > 0
+#if DISPLAY_OUTPUT > 0
   display.clearDisplay();
   display.setTextSize(5);
   display.setCursor(5, 5);
@@ -90,7 +90,7 @@ void sensor_calibration() {
       }
       led_update();
 
-#if SERIELLE_AUSGABE > 0
+#if SERIAL_OUTPUT > 0
       Serial.print("ok: ");
       Serial.println(okay);
 #endif
@@ -134,7 +134,7 @@ unsigned int light_sensor(void)  // Auslesen des Lichtsensors
 void sensor_init() {
   // co2_sensor.setForcedRecalibrationFactor(1135); //400ppm = Frischluft
   // //400ppm = Frischluft
-  // co2_sensor.setMeasurementInterval(INTERVALL); //setze Messinterval
+  // co2_sensor.setMeasurementInterval(INTERVAL); //setze Messinterval
   // setze Pins
   pinMode(PIN_LSENSOR_PWR, OUTPUT);
   digitalWrite(PIN_LSENSOR_PWR, LOW);  // Lichtsensor aus
@@ -145,24 +145,24 @@ void sensor_init() {
   Wire.begin();
   Wire.setClock(50000);  // 50kHz, empfohlen fue SCD30
 
-#if DISPLAY_AUSGABE > 0
+#if DISPLAY_OUTPUT > 0
   delay(500);  // 500ms warten
   display.begin(SSD1306_SWITCHCAPVCC, 0x3D);
 #endif
 
-  while (co2_sensor.begin(Wire, AUTO_KALIBRIERUNG) == false) {
+  while (co2_sensor.begin(Wire, AUTO_CALIBRATION) == false) {
     digitalWrite(PIN_LED, HIGH);
     delay(500);
     digitalWrite(PIN_LED, LOW);
     delay(500);
-#if SERIELLE_AUSGABE > 0
-    Serial.println("Fehler: CO2 Sensor nicht gefunden.");
+#if SERIAL_OUTPUT > 0
+    Serial.println("Error: CO2 sensor not found.");
     led_failure(LED_RED);
 #endif
   }
   // co2_sensor.setForcedRecalibrationFactor(1135);
-  co2_sensor.setMeasurementInterval(INTERVALL);  // setze Messinterval
-  delay(INTERVALL * 1000);                       // Intervallsekunden warten
+  co2_sensor.setMeasurementInterval(INTERVAL);  // setze Messinterval
+  delay(INTERVAL * 1000);                       // Intervallsekunden warten
   co2_sensor.setTemperatureOffset(TEMPERATURE_OFFSET);
 }
 
@@ -174,7 +174,7 @@ void sensor_handler() {
   unsigned int ampel = 0;
   co2_average = (co2_average + co2) / 2;  // Berechnung jede Sekunde
 
-#if AMPEL_DURCHSCHNITT > 0
+#if USE_AVERAGE > 0
   ampel = co2_average;
 #else
   ampel = co2;
@@ -193,11 +193,11 @@ void sensor_handler() {
   }
 
   // Ampel
-  if (ampel < START_GELB) {
+  if (ampel < START_YELLOW) {
     led_set_color(LED_GREEN);
-  } else if (ampel < START_ROT) {
+  } else if (ampel < START_RED) {
     led_set_color(LED_YELLOW);
-  } else if (ampel < START_ROT_BLINKEN) {
+  } else if (ampel < START_RED_BLINK) {
     led_set_color(LED_RED);
   } else {  // rot blinken
     led_blink(LED_RED, 500);
@@ -223,19 +223,19 @@ unsigned int get_brightness() {
 }
 
 void sensor_handle_brightness() {
-  if ((millis() - t_light) > (LICHT_INTERVALL * 1000)) {
+  if ((millis() - t_light) > (LIGHT_INTERVAL * 1000)) {
     t_light = millis();
     light = light_sensor();
-    if (light < LICHT_DUNKEL) {
+    if (light < LIGHT_DARK) {
       if (dunkel == 0) {
         dunkel = 1;
-        co2_sensor.setMeasurementInterval(INTERVALL_DUNKEL);
-        led_adjust_brightness(255 / (100 / HELLIGKEIT_DUNKEL));
+        co2_sensor.setMeasurementInterval(INTERVAL_DARK);
+        led_adjust_brightness(255 / (100 / BRIGHTNESS_DARK));
       }
     } else {
       if (dunkel == 1) {
         dunkel = 0;
-        co2_sensor.setMeasurementInterval(INTERVALL);
+        co2_sensor.setMeasurementInterval(INTERVAL);
         led_adjust_brightness(255);  // 0...255
       }
     }

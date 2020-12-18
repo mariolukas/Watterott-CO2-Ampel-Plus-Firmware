@@ -3,12 +3,12 @@
 #include "Buzzer.h"
 #include "Config.h"
 
-Adafruit_NeoPixel ws2812 = Adafruit_NeoPixel(WS2312_NUMBER_OF_PIXELS,
+Adafruit_NeoPixel ws2812 = Adafruit_NeoPixel(NUMBER_OF_WS2312_PIXELS,
                                              PIN_WS2812,
                                              NEO_GRB + NEO_KHZ800);
 byte connecting_tick = 0;
 byte led_tick = 0;
-byte led_brightness = HELLIGKEIT;
+byte led_brightness = BRIGHTNESS;
 
 void fill_led_by_led(uint32_t color) {
   for (int i = 0; i < 4; i++) {
@@ -44,7 +44,7 @@ void led_test() {
 void led_one_by_one(uint32_t color, int interval) {
   ws2812.clear();
   ws2812.setPixelColor(led_tick, color);
-  if (led_tick == WS2312_NUMBER_OF_PIXELS) {
+  if (led_tick == NUMBER_OF_WS2312_PIXELS) {
     led_tick = 0;
   } else {
     led_tick++;
@@ -107,19 +107,19 @@ uint32_t led_get_color() {
 }
 
 void led_update() {
-  // led_set_brightness_to(HELLIGKEIT);
+  // led_set_brightness_to(BRIGHTNESS);
   ws2812.show();
 }
 
 void led_wifi_ap_mode() {
   // fade in
-  for (int x = HELLIGKEIT_DUNKEL; x < HELLIGKEIT; x++) {
+  for (int x = BRIGHTNESS_DARK; x < BRIGHTNESS; x++) {
     delay(10);
     led_adjust_brightness(x);
     led_set_brightness();
   }
   // fade out
-  for (int x = HELLIGKEIT; x >= HELLIGKEIT_DUNKEL; x--) {
+  for (int x = BRIGHTNESS; x >= BRIGHTNESS_DARK; x--) {
     delay(10);
     led_adjust_brightness(x);
     led_set_brightness();

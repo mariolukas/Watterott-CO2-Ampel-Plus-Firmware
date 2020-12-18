@@ -24,7 +24,7 @@ bool wifi_is_connected() {
 }
 
 void wifi_ap_create() {
-  led_set_color(LED_BLUE);
+  led_set_color(LED_COLOR_WIFI_MANAGER);
   led_update();
 
   if (wifi_status == WL_CONNECTED) {
@@ -35,19 +35,19 @@ void wifi_ap_create() {
     Serial.println("WiFi shield not present");
     // don't continue
     while (true) {
-      led_failure(LED_BLUE);
+      led_failure(LED_COLOR_WIFI_FAILURE);
     }
   }
   WiFi.macAddress(wifi_mac);
 
   char ap_ssid[20];
 
-  sprintf(ap_ssid, "%s %02X:%02X", AP_SSID, wifi_mac[4], wifi_mac[5]);
+  sprintf(ap_ssid, "%s %02X:%02X", WIFI_AP_SSID, wifi_mac[4], wifi_mac[5]);
   wifi_status = WiFi.beginAP(ap_ssid, cfg.ap_password);
   if (wifi_status != WL_AP_LISTENING) {
     Serial.println("Creating access point failed");
     while (true) {
-      led_failure(LED_BLUE);
+      led_failure(LED_COLOR_WIFI_FAILURE);
     }
   }
   delay(5000);
@@ -70,7 +70,7 @@ int wifi_wpa_connect() {
     Serial.println("WiFi shield not present");
     // don't continue
     while (true) {
-      led_failure(LED_BLUE);
+      led_failure(LED_COLOR_WIFI_FAILURE);
     };
   }
 
@@ -79,7 +79,7 @@ int wifi_wpa_connect() {
 
   while (timeout && (WiFi.status() != WL_CONNECTED)) {
     timeout -= 1000;
-    led_failure(LED_BLUE);
+    led_failure(LED_COLOR_WIFI_CONNECTING);
   }
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -113,7 +113,7 @@ void print_wifi_status() {
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
 }
@@ -260,11 +260,11 @@ void wifi_handle_client() {
             client.print("<div class=\"box\"><h1>CO2 Ampel Status</h1>");
             client.print("<span class=\"css-ampel");
             int ampel = get_co2();
-            if (ampel < START_GELB) {
+            if (ampel < START_YELLOW) {
               client.print(" ampelgruen");
-            } else if (ampel < START_ROT) {
+            } else if (ampel < START_RED) {
               client.print(" ampelgelb");
-            } else if (ampel < START_ROT_BLINKEN) {
+            } else if (ampel < START_RED_BLINK) {
               client.print(" ampelrot");
             } else {  // rot blinken
               client.print(" ampelrotblinkend");

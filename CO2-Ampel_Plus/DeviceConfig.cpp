@@ -21,7 +21,7 @@ void config_set_factory_defaults() {
                                      MQTT_BROKER_PORT,
                                      MQTT_BROKER_ADDR,
                                      MQTT_TOPIC,
-                                     DEVICE_NAME,
+                                     MQTT_DEVICE_NAME,
                                      TEMPERATURE_OFFSET,
                                      MQTT_USERNAME,
                                      MQTT_PASSWORD,
