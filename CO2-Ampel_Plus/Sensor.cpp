@@ -14,6 +14,7 @@
 
 #if DISPLAY_OUTPUT > 0
 Adafruit_SSD1306 display(128, 64);  // 128x64 Pixel
+Serial.println("Use SSD1306 display")
 #endif
 
 SCD30 co2_sensor;

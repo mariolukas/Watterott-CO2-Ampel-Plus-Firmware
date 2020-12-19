@@ -40,8 +40,14 @@ int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 
 void setup() {
   // while (!SerialUSB);
-
+  while (!Serial) {
+     ; // wait for serial port to connect. Needed for native USB
+  }
   Serial.begin(115200);
+  Serial.println("------------------------");
+  Serial.println("Starting setup...");
+  Serial.println("Watterott CO2 Ampel PLUS");
+  Serial.println("Firmware version v1.0.1");
 #if DEBUG_LOG > 0
   Serial.println("Loglevel set to DEBUG!");
   Serial.println("--- !!! WARNING !!! ---");
@@ -65,7 +71,7 @@ void setup() {
    * Factory Reset when button is pressed while reset
    */
   if (!config_is_initialized() || modeButton.isPressed()) {
-    Serial.println("Loading Factory defaults");
+    Serial.println("Loading factory defaults");
     led_off();
     led_set_color(LED_RED);
     led_update();
@@ -73,6 +79,8 @@ void setup() {
     config_set_factory_defaults();
     led_off();
   }
+  Serial.println("Setup complete!");
+  Serial.println("------------------------");
 }
 
 void loop() {
@@ -89,6 +97,7 @@ void loop() {
       Serial.println("Creating Access Point");
       wifi_ap_create();
       wifi_state = WIFI_MODE_AP_LISTEN;
+      Serial.println("------------------------");
       break;
 
     case WIFI_MODE_WPA_CONNECT:  // Connect to WiFi
@@ -107,7 +116,9 @@ void loop() {
         Serial.println("No WiFi SSID Configured.");
         wifi_state = WIFI_MODE_NOT_CONECTED;
       }
-
+      Serial.println("------------------------");
+      Serial.println("Start measurement");
+      Serial.println("");
       break;
   }
 
