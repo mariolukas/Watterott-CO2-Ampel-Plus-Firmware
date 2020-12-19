@@ -42,6 +42,14 @@ void setup() {
   // while (!SerialUSB);
 
   Serial.begin(115200);
+#if DEBUG_LOG > 0
+  Serial.println("Loglevel set to DEBUG!");
+  Serial.println("--- !!! WARNING !!! ---");
+  Serial.println("Debug log exposes sensitive");
+  Serial.println("login informtation to the");
+  Serial.println("serial console. Never use");
+  Serial.println("in production environment!");
+#endif
   led_init();
   led_set_color(LED_WHITE);
   led_update();

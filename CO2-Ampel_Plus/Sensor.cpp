@@ -55,6 +55,9 @@ void show_data(void)  // Daten anzeigen
 }
 
 void sensor_calibration() {
+#if DEBUG_LOG > 0
+  Serial.println("Start CO2 sensor calibration");
+#endif
   unsigned int okay = 0, co2_last = 0;
   // led_test();
 
@@ -136,6 +139,9 @@ void sensor_init() {
   // //400ppm = Frischluft
   // co2_sensor.setMeasurementInterval(INTERVAL); //setze Messinterval
   // setze Pins
+#if DEBUG_LOG > 0
+  Serial.println("Initialize CO2 sensor");
+#endif
   pinMode(PIN_LSENSOR_PWR, OUTPUT);
   digitalWrite(PIN_LSENSOR_PWR, LOW);  // Lichtsensor aus
   pinMode(PIN_LSENSOR, INPUT);
@@ -168,6 +174,10 @@ void sensor_init() {
 
 void sensor_set_temperature_offset(float offset) {
   co2_sensor.setTemperatureOffset(offset);
+#if DEBUG_LOG > 0
+  Serial.print("Set temperatur offset to ");
+  Serial.println(offset);
+#endif
 }
 
 void sensor_handler() {

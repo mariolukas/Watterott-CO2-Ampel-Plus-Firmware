@@ -9,9 +9,15 @@ void buzzer_init() {
 }
 
 void buzzer_test() {
+#if DEBUG_LOG > 0
+    Serial.print("Buzzer selftest... ");
+#endif
   analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer on
   delay(1000);
   analogWrite(PIN_BUZZER, 0);  // Buzzer off
+#if DEBUG_LOG > 0
+  Serial.println("done!");
+#endif
 }
 
 void buzzer_ack() {
@@ -23,6 +29,9 @@ void buzzer_ack() {
 void buzzer_on() {
   device_config_t cfg = config_get_values();
   if (cfg.buzzer_enabled) {
+#if DEBUG_LOG > 0
+    Serial.println("Buzzer is enabled");
+#endif
     analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer on
   }
 }

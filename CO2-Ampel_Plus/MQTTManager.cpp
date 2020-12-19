@@ -23,11 +23,16 @@ bool mqtt_connect() {
       mqttClient.setServer(cfg.mqtt_broker_address, cfg.mqtt_broker_port);
   if (!mqttClient.connect(cfg.ampel_name, cfg.mqtt_username, cfg.mqtt_password,
                           willTopic, willQoS, willRetain, willMessage)) {
-    Serial.println("Could not connect to server. Configuration: ");
+    Serial.println("Could not connect to server.");
+#if DEBUG_LOG > 0
+    Serial.print("Confguration:");
     Serial.print("  Name: ");
     Serial.println(cfg.ampel_name);
     Serial.print("  Username: ");
     Serial.println(cfg.mqtt_username);
+    Serial.print("  Password: ");
+    Serial.println(cfg.mqtt_password);
+#endif
     return false;
   }
   mqttClient.publish(willTopic, "connected");
@@ -49,6 +54,12 @@ void mqtt_send_value(int co2, int temp, int hum, int lux) {
             co2, temp, hum, lux);
     if (mqttClient.publish(mqttTopic, mqttMessage)) {
       Serial.println("Data publication successfull.");
+#if DEBUG_LOG > 0
+      Serial.print("Message: ");
+      Serial.println(mqttMessage);
+      Serial.print("Topic: ");
+      Serial.print(mqttTopic);
+#endif
     } else {
       Serial.println(
           "Data publication failed, either connection lost or message too "

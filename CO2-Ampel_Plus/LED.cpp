@@ -34,11 +34,16 @@ void led_failure(uint32_t color) {
 }
 
 void led_test() {
+#if DEBUG_LOG > 0
+  Serial.print("LED selftest... ");
+#endif
   fill_led_by_led(LED_RED);
   fill_led_by_led(LED_YELLOW);
   fill_led_by_led(LED_GREEN);
   fill_led_by_led(LED_BLUE);
-  analogWrite(PIN_BUZZER, 0);
+#if DEBUG_LOG > 0
+  Serial.println("done!");
+#endif
 }
 
 void led_one_by_one(uint32_t color, int interval) {
@@ -152,11 +157,16 @@ void led_pulse(){
 */
 
 void led_init() {
-  Serial.println("Initialise LEDs");
+#if DEBUG_LOG > 0
+  Serial.print("Initialise LEDs... ");
+#endif
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LOW);  // LED aus
   pinMode(PIN_WS2812, OUTPUT);
   digitalWrite(PIN_WS2812, LOW);
   ws2812.clear();
   ws2812.show();
+#if DEBUG_LOG > 0
+  Serial.println("done!");
+#endif
 }

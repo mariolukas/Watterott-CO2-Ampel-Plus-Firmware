@@ -3,6 +3,8 @@
 
 #define VERSION "v1.0.1"
 
+#define DEBUG_LOG 0 // 1 = Enable debug log
+
 //--- Measurement interval ---
 #define INTERVAL 3          // 2-1800s (normal)
 #define INTERVAL_DARK 30    // 2-1800s (at darkness)

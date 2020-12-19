@@ -24,6 +24,9 @@ bool wifi_is_connected() {
 }
 
 void wifi_ap_create() {
+#if DEBUG_LOG > 0
+  Serial.println("Create access point for configuration");
+#endif
   led_set_color(LED_COLOR_WIFI_MANAGER);
   led_update();
 
