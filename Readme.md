@@ -11,7 +11,7 @@ Die Ampel verfügt über zwei Tasten. Die von der USB Buchse aus links gelegene 
 ![Co2 Ampel Pro Tastenbelegung](docs/images/Tastenbelegung.png)
 
 ### Startvorgang und Normalmodus
-Nachdem Einschalten leuchtet die Ampel zunächst weiß. Zu diesem Zeitpunkt wird unter anderem der CO2 Sensor initialisiert. 
+Nachdem Einschalten leuchtet die Ampel zunächst weiß. Zu diesem Zeitpunkt wird unter anderem der CO2 Sensor initialisiert.
 Sobald die LEDs von weiß auf Grün, Gelb, Rot oder Rot blinken wechseln, befindet sich die Ampel im Normalbetrieb und zeigt den aktuellen CO2 Status an.
 
 Diverse LED Muster zeigen Fehlermeldungen an. Hierzu näheres im Abschnitt LED Fehlercodes.
@@ -22,7 +22,7 @@ Um die Ampel an das WLAN anzubinden, muss die Ampel zunächst dafür konfigurier
 
 Anschließend öffnet die Ampel einen Access Point. Unter den vom Rechner gefundenen WLAN Netzen erscheint ein Netz mit dem Namen "CO2 Ampel xx:yy". Wobei xx:yy für jede Ampel unterschiedlich sein kann.
 
-Mit diesem Netz verbindet man den Rechner. Bei der Passwort-Abfrage gibt man als Passwort ```co2admin```ein (sofern das Passwort nicht bereits geändert wurde).
+Mit diesem Netz verbindet man den Rechner. Bei der Passwort-Abfrage gibt man als Passwort ```co2admin``` ein (sofern das Passwort nicht bereits geändert wurde).
 
 Wenn der Rechner mit dem Netz der Ampel verbunden ist, kann man mit dem Browser über die Adresse ```http://192.168.1.1``` die Einstellungen der Ampel erreichen.
 
@@ -39,7 +39,7 @@ Die Einstellungen können jederzeit wieder verändert werden, indem man die Ampe
 ### MQTT Einrichten
 Möchte man ein erweitertes Monitoring, so kann man dies erreichen, indem man das [CO2 Monitoring Projekt für die Ampel](https://github.com/mariolukas/Docker-CO2-Monitoring) einrichtet.
 
-In der Ampel muss dazu jedoch eine MQTT Broker Verbindung eingerichtet werden. Hierzu trägt man im AP Mode die MQTT Broker IP ein. Die IP Adresse muss die gleiche, sein unter welcher das oben verlinkte Projekt eingerichtet wurde. Nachdem man die Ampel neu startet, verbindet sich die Ampel zusätzlich über das WLAN Netz mit dem MQTT Broker und beginnt, Status Daten an diesen zu übermitteln. 
+In der Ampel muss dazu jedoch eine MQTT Broker Verbindung eingerichtet werden. Hierzu trägt man im AP Mode die MQTT Broker IP ein. Die IP Adresse muss die gleiche, sein unter welcher das oben verlinkte Projekt eingerichtet wurde. Nachdem man die Ampel neu startet, verbindet sich die Ampel zusätzlich über das WLAN Netz mit dem MQTT Broker und beginnt, Status Daten an diesen zu übermitteln.
 
 Diese Daten können dann bequem über das oben stehende Projekt mittels Grafana ausgewertet werden.
 
@@ -49,22 +49,22 @@ Die Ampel kann auf die Standard Werte zurückgesetzt werden, indem man den Mode 
 
 
 ## Neue Ampel Firmware Version installieren
-Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an. 
+Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an.
 
-Um die neue Firmware zu installieren, kopiert man einfach die entsprechende entsprechende Firmware Datei auf dieses Laufwerk. Die Ampel installiert dann vollautomatisch die neue Firmware und startet neu. 
+Um die neue Firmware zu installieren, kopiert man einfach die entsprechende entsprechende Firmware Datei auf dieses Laufwerk. Die Ampel installiert dann vollautomatisch die neue Firmware und startet neu.
 
-Achtung: bei der Installation einer neuen Firmware gehen die vorgenommenen Einstellungen (wie z.B. WiFi SSID und Passwort) verloren und müssen neu gesetzt werden. 
+Achtung: bei der Installation einer neuen Firmware gehen die vorgenommenen Einstellungen (wie z.B. WiFi SSID und Passwort) verloren und müssen neu gesetzt werden.
 
 [Die Firmware Releases findet man hier](https://github.com/mariolukas/Watterott-CO2-Ampel-Plus-Firmware/releases).
 
 ## Eigene Ampel Version aus den Quellen kompilieren
 
 ### Benötigtes Board Support Package
-Um die Ampel mit der Arduino IDE kompilieren zu können, empfiehlt es sich, das passende Board Support Package für die Ampel zu installieren. Hierzu fügt man einfach über Datei -> Einstellungen (bei MacOS: Arduino -> Einstellungen) die folgende Zeile 
+Um die Ampel mit der Arduino IDE kompilieren zu können, empfiehlt es sich, das passende Board Support Package für die Ampel zu installieren. Hierzu fügt man einfach über Datei -> Einstellungen (bei MacOS: Arduino -> Einstellungen) die folgende Zeile
 
 ```
 https://github.com/watterott/CO2-Ampel/raw/master/package_co2ampel_index.json
-``` 
+```
 hinzu.
 
 ![Screenshot of Grafana Monitoring](docs/images/arduino_einstellungen.png)
@@ -77,21 +77,20 @@ Anschließend kann das CO2 Ampel Board über den Arduino Board Manager installie
 
 Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufgelisteten Bibliotheken installiert sind, lässt sich der Quellcode kompilieren.
 
+Die "Arduino SAMD Boards" müssen ebenfalls installiert sein.
+
 ### Benötigte Bibliotheken
 
 Es werden zusätzlich die folgenden Bibliotheken benötigt, um das Programm kompilieren zu können.
 
-[https://github.com/adafruit/Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
-
-[https://github.com/knolleary/pubsubclient](https://github.com/knolleary/pubsubclient)
-
-[https://github.com/JChristensen/JC_Button](https://github.com/JChristensen/JC_Button)
-
-[https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library)
+* [https://github.com/adafruit/Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
+* [https://github.com/knolleary/pubsubclient](https://github.com/knolleary/pubsubclient)
+* [https://github.com/JChristensen/JC_Button](https://github.com/JChristensen/JC_Button)
+* [https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library)
 
 
 ### Anpassungen
-Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h```wieder.
+Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
 
 
 ## LED Fehlercodes
