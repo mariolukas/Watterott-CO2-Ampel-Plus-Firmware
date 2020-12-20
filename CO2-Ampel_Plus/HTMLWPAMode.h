@@ -19,7 +19,7 @@ const char cssampel[] PROGMEM = R"=====(
     width: 22px;
     height: 22px;
     left: 4px;
-}    
+}
 
 .css-ampel:before {
     top: 6px;
@@ -37,7 +37,7 @@ const char cssampel[] PROGMEM = R"=====(
     top: 62px;
     background-color: green;
     background-color: dimgrey;
-}    
+}
 
 .ampelrot:before {
     background-color: red;
@@ -57,29 +57,29 @@ const char cssampel[] PROGMEM = R"=====(
 .ampelrotblinkend:before {
     animation-name: rotblinkend;
     animation-timing-function: ease-in;
-    animation-duration: 2s; 
-    animation-iteration-count: infinite;    
-} 
-   
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
 @keyframes rotblinkend {
-    0% {  
+    0% {
         background-color: dimgrey;
     }
-    30% {  
+    30% {
         background-color: dimgrey;
     }
-    40% {  
+    40% {
         background-color: red;
         box-shadow: 0 0 20px red;
     }
-    100% {  
+    100% {
         background-color: red;
         box-shadow: 0 0 20px red;
     }
 }
 )=====";
-const String wpa_root_html_header =
-    F("<html>\
+
+const String wpa_root_html_header = F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\
@@ -143,14 +143,11 @@ body {\
     font-size: 15px;\
 }");
 
-const String wpa_root_html_middle =
-    F("</style>\
+const String wpa_root_html_middle = F("</style>\
 <meta charset=\"UTF-8\">\
 <title>CO2 Ampel Wifi AP</title>\
 <meta http-equiv=\"refresh\" content=\"3; URL=/\">\
 </head>\
 <body>");
 
-const String wpa_root_html_footer =
-    F("</body>\
-</html>");
+const String wpa_root_html_footer = F("</body></html>");

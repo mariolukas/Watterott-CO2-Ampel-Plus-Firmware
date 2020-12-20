@@ -156,10 +156,10 @@ void wifi_handle_client() {
   if (client) {
     RequestParser requestParser = RequestParser(client);
     // if you get a client,
-    Serial.println(
-        F("New client Connected"));  // print a message out the serial port
-    String currentLine =
-        "";  // make a String to hold incoming data from the client
+    // print a message out the serial port
+    Serial.println(F("New client Connected"));
+    // make a String to hold incoming data from the client
+    String currentLine = "";
 
     while (client.connected()) {
       // loop while the client's connected
@@ -288,15 +288,13 @@ void wifi_handle_client() {
               client.print(brgt);
             }
 
-            client.print("<br>");
-            client.print("<br>");
-            client.print("MQTT Broker ist ");
+            client.print("<br><br>");
+            client.print("MQTT Broker is ");
             if (!mqtt_broker_connected()) {
-              client.print("nicht ");
+              client.print("not ");
             }
-            client.print("verbunden.");
-            client.print("<br>");
-            client.print("<br>");
+            client.print("connected.");
+            client.print("<br><br>");
             client.print("Firmware: ");
             client.println(VERSION);
             client.print("<br>");
@@ -330,11 +328,9 @@ void wifi_handle_client() {
             client.print(
                 "<form class=\"box\" action=\"/save\" "
                 "method=\"POST\" "
-                "name=\"loginForm\"><h1>Einstellungen</h1>");
+                "name=\"loginForm\"><h1>Settings</h1>");
             client.print("<label for=broker>MQTT Broker IP</label>");
-            client.print(
-                "<input name=broker "
-                "placeholder='127.0.0.1' value='");
+            client.print("<input name=broker placeholder='127.0.0.1' value='");
             client.print(cfg.mqtt_broker_address);
             client.print("'>");
 
@@ -349,16 +345,12 @@ void wifi_handle_client() {
             client.print("'>");
 
             client.print("<label for=port>MQTT Username</label>");
-            client.print(
-                "<input name=mqttuser "
-                "placeholder='username' value='");
+            client.print("<input name=mqttuser placeholder='username' value='");
             client.print(cfg.mqtt_username);
             client.print("'>");
 
             client.print("<label for=port>MQTT Password</label>");
-            client.print(
-                "<input type=password name=mqttpass "
-                "placeholder='password' value='");
+            client.print("<input type=password name=mqttpass placeholder='password' value='");
             client.print(cfg.mqtt_password);
             client.print("'>");
 
@@ -373,31 +365,23 @@ void wifi_handle_client() {
             client.print("'>");
 
             client.print("<label for=pwd>Password</label>");
-            client.print(
-                "<input type=password name=pwd "
-                "placeholder='Passwort' value='");
+            client.print("<input type=password name=pwd placeholder='Passwort' value='");
             client.print(cfg.wifi_password);
             client.print("'>");
 
             client.print("<label for=ap_pwd>Access Point Passwort</label>");
-            client.print(
-                "<input type=password name=ap_pwd "
-                "placeholder='Passwort' value='");
+            client.print("<input type=password name=ap_pwd placeholder='Passwort' value='");
             client.print(cfg.ap_password);
             client.print("'>");
 
             client.print("<label for=buzzer>Buzzer</label>");
             client.print("<select id=buzzer name=buzzer size=2>");
             if (cfg.buzzer_enabled) {
-              client.print(
-                  "<option value=\"true\" "
-                  "selected>Enabled</option>");
+              client.print("<option value=\"true\" selected>Enabled</option>");
               client.print("<option value=\"false\">Disabled</option>");
             } else {
               client.print("<option value=\"true\">Enabled</option>");
-              client.print(
-                  "<option value=\"false\" "
-                  "selected>Disabled</option>");
+              client.print("<option value=\"false\" selected>Disabled</option>");
             };
             client.print("</select>");
 
@@ -407,9 +391,7 @@ void wifi_handle_client() {
             // class=\"btnbox\"><button
             // onclick=\"window.location.href='/calibrate'\"
             // class=\"btn\">Calibration</button></div>");
-            client.print(
-                "<input type=submit class=btn "
-                "value=\"Speichern und Neustart\">");
+            client.print("<input type=submit class=btn value=\"Save and reboot\">");
             client.print("<br><br>");
             client.print("Firmware: ");
             client.println(VERSION);

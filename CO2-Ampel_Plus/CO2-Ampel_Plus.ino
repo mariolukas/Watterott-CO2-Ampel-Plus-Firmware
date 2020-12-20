@@ -39,15 +39,15 @@ Button modeButton(BUTTON_PIN);
 int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 
 void setup() {
-  // while (!SerialUSB);
   while (!Serial) {
-     ; // wait for serial port to connect. Needed for native USB
+     ; // wait for serial port to connect.
   }
   Serial.begin(115200);
   Serial.println("------------------------");
   Serial.println("Starting setup...");
   Serial.println("Watterott CO2 Ampel PLUS");
-  Serial.println("Firmware version v1.0.1");
+  Serial.print("Firmware version ");
+  Serial.println(VERSION);
 #if DEBUG_LOG > 0
   Serial.println("Loglevel set to DEBUG!");
   Serial.println("--- !!! WARNING !!! ---");
@@ -56,7 +56,9 @@ void setup() {
   Serial.println("serial console. Never use");
   Serial.println("in production environment!");
 #endif
+
   led_init();
+  led_test();
   led_set_color(LED_WHITE);
   led_update();
 
