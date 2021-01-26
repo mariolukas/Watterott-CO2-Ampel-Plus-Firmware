@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v1.0.1"
+#define VERSION "v2.0.0"
 
 #define WS2312_NUMBER_OF_PIXELS 4
 // STATES
