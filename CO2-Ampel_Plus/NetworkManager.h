@@ -1,14 +1,13 @@
 #ifndef NETWORK_H
 #define NETWORK_H
-//#include "MQTTManager.h"
-#include "Sensor.h"
-#include "Buzzer.h"
-#include "Led.h"
-#include "HTMLAPMode.h"
-#include "HTMLWPAMode.h"
-#include "MQTTManager.h"
 #include <SPI.h>
 #include <WiFi101.h>
+#include "Buzzer.h"
+#include "HTMLAPMode.h"
+#include "HTMLWPAMode.h"
+#include "Led.h"
+#include "MQTTManager.h"
+#include "Sensor.h"
 
 bool wifi_is_connected();
 
