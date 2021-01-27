@@ -67,27 +67,17 @@ https://github.com/watterott/CO2-Ampel/raw/master/package_co2ampel_index.json
 ```
 hinzu.
 
-![Screenshot of Grafana Monitoring](docs/images/arduino_einstellungen.png)
+![Arduino Settings](docs/images/arduino_einstellungen.png)
 
-![Screenshot of Grafana Monitoring](docs/images/add_bsp.png)
+![Arduino Boards URLs](docs/images/add_bsp.png)
 
 Anschließend kann das CO2 Ampel Board über den Arduino Board Manager installiert werden (Werkzeuge -> Board -> Boardverwalter).
 
-![Screenshot of Grafana Monitoring](docs/images/install_bsp.png)
+![Arduino Boards Manager](docs/images/install_bsp.png)
 
 Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufgelisteten Bibliotheken installiert sind, lässt sich der Quellcode kompilieren.
 
 Die "Arduino SAMD Boards" müssen ebenfalls installiert sein.
-
-### Benötigte Bibliotheken
-
-Es werden zusätzlich die folgenden Bibliotheken benötigt, um das Programm kompilieren zu können.
-
-* [https://github.com/adafruit/Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
-* [https://github.com/knolleary/pubsubclient](https://github.com/knolleary/pubsubclient)
-* [https://github.com/JChristensen/JC_Button](https://github.com/JChristensen/JC_Button)
-* [https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library)
-
 
 ### Anpassungen
 Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
