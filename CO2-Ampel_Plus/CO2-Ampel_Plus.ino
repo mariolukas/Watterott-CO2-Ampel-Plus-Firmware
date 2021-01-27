@@ -39,9 +39,11 @@ Button modeButton(BUTTON_PIN);
 int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 
 void setup() {
+#if DEBUG_LOG > 0  
   while (!Serial) {
      ; // wait for serial port to connect.
   }
+#endif
   Serial.begin(115200);
   Serial.println("------------------------");
   Serial.println("Starting setup...");
