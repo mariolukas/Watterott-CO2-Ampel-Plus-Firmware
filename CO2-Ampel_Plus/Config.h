@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v2.0.0"
+#define VERSION "v2.0.1"
 
 #define DEBUG_LOG 0 // 1 = Enable debug log
 

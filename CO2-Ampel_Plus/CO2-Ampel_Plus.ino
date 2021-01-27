@@ -1,5 +1,5 @@
 /*
-  CO2-Ampel (v2.0.0)
+  CO2-Ampel (v2.0.1)
 
   Testmodus:
   1. Den Switch-Taster beim Einschalten gedrueckt halten.
