@@ -96,9 +96,7 @@ int wifi_wpa_connect() {
   } else {
     print_wifi_status();
     server.begin();
-    if (strcmp(cfg.mqtt_broker_address, "127.0.0.1")) { /* prevent connection to localhost */
-      mqtt_connect();
-    }
+    mqtt_connect();
   }
 
   return wifi_status;
