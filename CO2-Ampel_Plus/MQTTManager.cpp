@@ -45,15 +45,21 @@ bool mqtt_broker_connected() {
   return mqttClient.connected();
 }
 
-void mqtt_send_value(int co2, int temp, int hum, int lux) {
+void mqtt_send_value(int co2, float temp, int hum, int lux) {
   if (mqttClient.connected()) {
     device_config_t cfg = config_get_values();
     char mqttTopic[128];
     sprintf(mqttTopic, "%s/%s", cfg.mqtt_topic, cfg.ampel_name);
     char mqttMessage[512];
+    char tempMessage[20];
+    sprintf(tempMessage, "%d.%02d", (int)temp, (int)(temp*100)%100);
+#if DEBUG_LOG > 0
+      Serial.print("TempMQTTMessage: ");
+      Serial.println(tempMessage);
+#endif
     sprintf(mqttMessage,
-            "{\"co2\":\"%i\",\"temp\":\"%i\",\"hum\":\"%i\",\"lux\":\"%i\"}",
-            co2, temp, hum, lux);
+            "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%i\",\"lux\":\"%i\"}",
+            co2, tempMessage, hum, lux);
     if (mqttClient.publish(mqttTopic, mqttMessage)) {
       Serial.println("Data publication successfull.");
 #if DEBUG_LOG > 0
