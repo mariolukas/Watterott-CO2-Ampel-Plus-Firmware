@@ -2,6 +2,7 @@
 #include "Led.h"
 #include "Buzzer.h"
 #include "Config.h"
+#include "DeviceConfig.h"
 
 Adafruit_NeoPixel ws2812 = Adafruit_NeoPixel(NUMBER_OF_WS2312_PIXELS,
                                              PIN_WS2812,
@@ -87,7 +88,12 @@ void led_set_color(uint32_t color) {
 }
 
 void led_set_brightness() {
-  ws2812.setBrightness(led_brightness);
+  device_config_t cfg = config_get_values();
+  if (cfg.light_enabled) {
+    ws2812.setBrightness(led_brightness);
+  } else {
+    ws2812.setBrightness(0);
+  }
 }
 
 void led_adjust_brightness(byte brightness) {
