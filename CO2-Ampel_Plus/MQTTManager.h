@@ -6,7 +6,7 @@
 #include "NetworkManager.h"
 
 bool mqtt_connect();
-void mqtt_send_value(int co2, int temp, int hum, int lux);
+void mqtt_send_value(int co2, float temp, int hum, int lux);
 bool mqtt_broker_connected();
 
 #endif
