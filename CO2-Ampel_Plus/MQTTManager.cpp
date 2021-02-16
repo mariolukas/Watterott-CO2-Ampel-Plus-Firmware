@@ -54,28 +54,60 @@ bool mqtt_broker_connected() {
   return mqttClient.connected();
 }
 
-void mqtt_send_value(int co2, int temp, int hum, int lux) {
+void mqtt_send_value(int co2, float temp, int hum, int lux) {
   if (mqttClient.connected()) {
     device_config_t cfg = config_get_values();
     char mqttTopic[128];
-    sprintf(mqttTopic, "%s/%s", cfg.mqtt_topic, cfg.ampel_name);
     char mqttMessage[512];
-    sprintf(mqttMessage,
-            "{\"co2\":\"%i\",\"temp\":\"%i\",\"hum\":\"%i\",\"lux\":\"%i\"}",
-            co2, temp, hum, lux);
-    if (mqttClient.publish(mqttTopic, mqttMessage)) {
-      Serial.println("Data publication successfull.");
+    char tempMessage[20];
+    sprintf(tempMessage, "%d.%02d", (int)temp, (int)(temp*100)%100);
+
+    if (cfg.mqtt_format == 0){    // sending data in JSON Format to specified topic...
+      sprintf(mqttTopic, "%s/%s", cfg.mqtt_topic, cfg.ampel_name);
+
 #if DEBUG_LOG > 0
-      Serial.print("Message: ");
-      Serial.println(mqttMessage);
-      Serial.print("Topic: ");
-      Serial.print(mqttTopic);
+      Serial.print("TempMQTTMessage: ");
+      Serial.println(tempMessage);
 #endif
-    } else {
-      Serial.println(
-          "Data publication failed, either connection lost or message too "
-          "large.");
-    };
+      sprintf(mqttMessage,
+              "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%i\",\"lux\":\"%i\"}",
+              co2, tempMessage, hum, lux);
+      if (mqttClient.publish(mqttTopic, mqttMessage)) {
+        Serial.println("Data publication successfull.");
+#if DEBUG_LOG > 0
+        Serial.print("Message: ");
+        Serial.println(mqttMessage);
+        Serial.print("Topic: ");
+        Serial.print(mqttTopic);
+#endif
+      } else {
+        Serial.println(
+            "Data publication failed, either connection lost or message too "
+            "large.");
+      };
+
+    } else {    // sending data in influxdb format 
+        
+      sprintf(mqttMessage, "co2ampel,name=%s co2=%i,temp=%s,hum=%i,lux=%i", cfg.ampel_name, co2, tempMessage, hum, lux );
+      if (mqttClient.publish(cfg.mqtt_topic, mqttMessage)) {
+        Serial.println("Data publication successfull.");
+        
+#if DEBUG_LOG > 0
+        Serial.print("Message: ");
+        Serial.println(mqttMessage);
+        Serial.print("Topic: ");
+        Serial.print(mqttTopic);
+#endif
+
+      } else {
+        Serial.println(
+            "Data publication failed, either connection lost or message too "
+            "large.");
+      };
+          
+    }
+    
+    
   } else {
     Serial.println("Data publication failed, client is not connected. Trying to reconnect.");
     mqtt_connect();

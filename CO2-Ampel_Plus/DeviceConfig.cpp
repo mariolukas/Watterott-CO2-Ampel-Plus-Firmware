@@ -25,6 +25,7 @@ void config_set_factory_defaults() {
                                      TEMPERATURE_OFFSET,
                                      MQTT_USERNAME,
                                      MQTT_PASSWORD,
+                                     MQTT_FORMAT,
                                      LIGHT_ENABLED,
                                      BUZZER_ENABLED};
   config_store.write(_default_config);
