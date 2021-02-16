@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v2.0.1"
+#define VERSION "v2.1.0"
 
 #define DEBUG_LOG 0 // 1 = Enable debug log
 
@@ -46,6 +46,12 @@
 #define MQTT_SENSOR_TEMP 889
 #define MQTT_SENSOR_HUM 890
 #define MQTT_SENSOR_LUX 891
+
+/* MQTT Data Format.
+ * 0 - JSON 
+ * 1 - InfluxDB Line Format
+ */
+#define MQTT_FORMAT 0 
 
 //--- Buzzer configuration ---
 #define BUZZER_ENABLED true

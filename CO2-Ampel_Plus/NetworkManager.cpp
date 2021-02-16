@@ -226,6 +226,10 @@ void wifi_handle_client() {
                 }
               }
 
+              if ((requestParser.getField("format").length() > 0)) {
+                  cfg.mqtt_format = requestParser.getField("format").toInt();
+              }
+
               /**
                * Reboot if required.
                */
@@ -380,6 +384,17 @@ void wifi_handle_client() {
             } else {
               client.print("<option value=\"true\">Enabled</option>");
               client.print("<option value=\"false\" selected>Disabled</option>");
+            };
+            client.print("</select>");
+            client.print("<br><br>");
+            client.print("<label for=format>Format</label>");
+            client.print("<select id=format name=format size=2>");
+            if (cfg.mqtt_format == 0) {
+              client.print("<option value=\"0\" selected>JSON</option>");
+              client.print("<option value=\"1\">Influx</option>");
+            } else {
+              client.print("<option value=\"0\">JSON</option>");
+              client.print("<option value=\"1\" selected>Influx</option>");
             };
             client.print("</select>");
 

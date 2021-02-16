@@ -14,6 +14,7 @@ typedef struct {
   float temperature_offset;
   char mqtt_username[20];
   char mqtt_password[20];
+  int mqtt_format;
   bool light_enabled;
   bool buzzer_enabled;
 } device_config_t;
