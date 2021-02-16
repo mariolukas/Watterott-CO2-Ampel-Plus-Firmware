@@ -40,6 +40,7 @@
 #define MQTT_BROKER_ADDR "127.0.0.1"
 #define MQTT_TOPIC "sensors"
 #define MQTT_LWT_SUBTOPIC "LWT"
+#define MQTT_SET_SUBTOPIC "set"
 #define MQTT_USERNAME "username"
 #define MQTT_PASSWORD "password"
 #define MQTT_SENSOR_CO2 888
