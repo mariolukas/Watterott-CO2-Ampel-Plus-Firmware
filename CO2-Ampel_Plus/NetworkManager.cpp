@@ -18,18 +18,24 @@ WiFiServer server(80);
 device_config_t cfg = config_get_values();
 int wifi_status = WL_IDLE_STATUS;
 byte wifi_mac[6];
+bool ap_mode_activated = false;
 
 bool wifi_is_connected() {
   return WiFi.status() == WL_CONNECTED;
 }
 
 void wifi_ap_create() {
+
 #if DEBUG_LOG > 0
   Serial.println("Create access point for configuration");
 #endif
+  
+  ap_mode_activated = true;
+  
   led_set_color(LED_COLOR_WIFI_MANAGER);
+  led_set_brightness();
   led_update();
-
+  
   if (wifi_status == WL_CONNECTED) {
     WiFi.end();
   }
@@ -44,7 +50,7 @@ void wifi_ap_create() {
   WiFi.macAddress(wifi_mac);
 
   char ap_ssid[20];
-
+  
   sprintf(ap_ssid, "%s %02X:%02X", WIFI_AP_SSID, wifi_mac[4], wifi_mac[5]);
   wifi_status = WiFi.beginAP(ap_ssid, cfg.ap_password);
   if (wifi_status != WL_AP_LISTENING) {
@@ -63,9 +69,14 @@ void wifi_ap_create() {
   }
 }
 
+bool ap_is_active(){
+  return ap_mode_activated;
+}
+
 int wifi_wpa_connect() {
   if (wifi_status == WL_AP_CONNECTED) {
     WiFi.end();
+    ap_mode_activated = false;
   }
 
   // check for the presence of the shield:
@@ -226,6 +237,14 @@ void wifi_handle_client() {
                 }
               }
 
+              if ((requestParser.getField("led").length() > 0)) {
+                if (requestParser.getField("led") == "false") {
+                  cfg.light_enabled = false;
+                } else {
+                  cfg.light_enabled = true;
+                }
+              }
+              
               if ((requestParser.getField("format").length() > 0)) {
                   cfg.mqtt_format = requestParser.getField("format").toInt();
               }
@@ -387,6 +406,19 @@ void wifi_handle_client() {
             };
             client.print("</select>");
             client.print("<br><br>");
+
+             client.print("<label for=led>LEDs</label>");
+            client.print("<select id=led name=led size=2>");
+            if (cfg.light_enabled) {
+              client.print("<option value=\"true\" selected>Enabled</option>");
+              client.print("<option value=\"false\">Disabled</option>");
+            } else {
+              client.print("<option value=\"true\">Enabled</option>");
+              client.print("<option value=\"false\" selected>Disabled</option>");
+            };
+            client.print("</select>");
+            client.print("<br><br>");
+            
             client.print("<label for=format>Format</label>");
             client.print("<select id=format name=format size=2>");
             if (cfg.mqtt_format == 0) {

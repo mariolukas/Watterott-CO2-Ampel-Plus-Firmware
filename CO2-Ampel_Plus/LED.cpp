@@ -3,6 +3,7 @@
 #include "Buzzer.h"
 #include "Config.h"
 #include "DeviceConfig.h"
+#include "NetworkManager.h"
 
 Adafruit_NeoPixel ws2812 = Adafruit_NeoPixel(NUMBER_OF_WS2312_PIXELS,
                                              PIN_WS2812,
@@ -20,16 +21,22 @@ void fill_led_by_led(uint32_t color) {
 }
 
 void led_failure(uint32_t color) {
+
   ws2812.setPixelColor(0, color);
   ws2812.setPixelColor(1, color);
   ws2812.setPixelColor(2, ws2812.Color(0, 0, 0));
   ws2812.setPixelColor(3, ws2812.Color(0, 0, 0));
+  ws2812.setBrightness(100);
+  
   ws2812.show();
   delay(500);
   ws2812.setPixelColor(0, ws2812.Color(0, 0, 0));
   ws2812.setPixelColor(1, ws2812.Color(0, 0, 0));
+
+  ws2812.setBrightness(100);
   ws2812.setPixelColor(2, color);
   ws2812.setPixelColor(3, color);
+
   ws2812.show();
   delay(500);
 }
@@ -85,11 +92,12 @@ void led_off() {
 void led_set_color(uint32_t color) {
   ws2812.fill(color, 0, NUMBER_OF_WS2812_LEDS);  // LEDs aus
   led_set_brightness();
+  ws2812.show();
 }
 
 void led_set_brightness() {
   device_config_t cfg = config_get_values();
-  if (cfg.light_enabled) {
+  if (cfg.light_enabled || ap_is_active()) {
     ws2812.setBrightness(led_brightness);
   } else {
     ws2812.setBrightness(0);
@@ -101,6 +109,7 @@ void led_adjust_brightness(byte brightness) {
 }
 
 void led_blink(uint32_t color, int intervall) {
+  
   ws2812.fill(ws2812.Color(0, 0, 0), 0, 4);
   // led_set_brightness(led_brightness);
   buzzer_on();  // Buzzer aus
@@ -118,49 +127,9 @@ uint32_t led_get_color() {
 }
 
 void led_update() {
-  // led_set_brightness_to(BRIGHTNESS);
+  led_set_brightness();
   ws2812.show();
 }
-
-void led_wifi_ap_mode() {
-  // fade in
-  for (int x = BRIGHTNESS_DARK; x < BRIGHTNESS; x++) {
-    delay(10);
-    led_adjust_brightness(x);
-    led_set_brightness();
-  }
-  // fade out
-  for (int x = BRIGHTNESS; x >= BRIGHTNESS_DARK; x--) {
-    delay(10);
-    led_adjust_brightness(x);
-    led_set_brightness();
-  }
-}
-
-/*
-void led_pulse(){
-    bool fadeup=true, fadedown=false;
-    if(led_tick <= 255 && fadeup){
-      fadeup = true;
-      if (tick == 255){
-         fadedown = true;
-      }  else {
-          tick++;
-      }
-    }
-
-    if (led_tick >= 255 && fadedown){
-      fadedown = true;
-      if (tick == 0){
-         fadeup = true;
-      }  else {
-          tick--;
-      }
-    }
-    led_set_brightness(led_tick);
-    delay(10);
-}
-*/
 
 void led_init() {
 #if DEBUG_LOG > 0
