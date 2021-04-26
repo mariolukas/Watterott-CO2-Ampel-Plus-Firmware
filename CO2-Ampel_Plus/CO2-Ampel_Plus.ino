@@ -29,6 +29,7 @@
 #include "Led.h"
 #include "NetworkManager.h"
 #include "Sensor.h"
+#include "MQTTManager.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
 const byte BUTTON_PIN(PIN_SWITCH);
@@ -126,6 +127,7 @@ void loop() {
       break;
   }
 
+  mqtt_loop();
   wifi_handle_client();
   sensor_handler();
   sensor_handle_brightness();
