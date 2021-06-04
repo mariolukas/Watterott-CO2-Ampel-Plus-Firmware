@@ -126,6 +126,10 @@ void loop() {
       break;
   }
 
+  if (!wifi_is_connected()) {
+    wifi_state = WIFI_MODE_WPA_CONNECT;
+  }
+
   wifi_handle_client();
   sensor_handler();
   sensor_handle_brightness();
