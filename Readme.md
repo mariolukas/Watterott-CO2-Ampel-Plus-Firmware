@@ -79,6 +79,11 @@ Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufge
 
 Die "Arduino SAMD Boards" müssen ebenfalls installiert sein.
 
+### Benötigtes Bibliotheken
+Als Bibliotheken benötigt das Projekt "ArduinoJson", die über den Bibliotheksmanager (Werkzeuge -> Bibliotheken verwalten) installiert werden muss.
+
+![Arduino Boards Manager](docs/images/install_lib_json.png)
+
 ### Anpassungen
 Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
 
