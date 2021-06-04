@@ -50,6 +50,10 @@ bool mqtt_connect() {
   }
 }
 
+void mqtt_loop() {
+  mqttClient.loop();
+}
+
 bool mqtt_broker_connected() {
   return mqttClient.connected();
 }
