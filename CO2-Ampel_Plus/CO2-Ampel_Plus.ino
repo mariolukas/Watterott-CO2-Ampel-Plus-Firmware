@@ -28,6 +28,7 @@
 #include "DeviceConfig.h"
 #include "Led.h"
 #include "NetworkManager.h"
+#include "LoraManager.h"
 #include "Sensor.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
