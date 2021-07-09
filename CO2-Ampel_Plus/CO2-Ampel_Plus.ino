@@ -30,6 +30,7 @@
 #include "NetworkManager.h"
 #include "LoraManager.h"
 #include "Sensor.h"
+#include "MQTTManager.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
 const byte BUTTON_PIN(PIN_SWITCH);
@@ -126,6 +127,14 @@ void loop() {
       Serial.println("");
       break;
   }
+
+
+
+  if (!wifi_is_connected()) {
+    wifi_state = WIFI_MODE_WPA_CONNECT;
+  }
+
+  mqtt_loop();
 
   wifi_handle_client();
   sensor_handler();
