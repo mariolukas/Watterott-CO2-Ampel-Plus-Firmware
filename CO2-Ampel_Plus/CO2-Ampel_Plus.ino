@@ -32,6 +32,7 @@
 #include "Sensor.h"
 #include "MQTTManager.h"
 
+
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
 const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
@@ -72,6 +73,8 @@ void setup() {
   buzzer_init();
   buzzer_test();
 
+  lora_init();
+  
   sensor_init();
   /**
    * Factory Reset when button is pressed while reset
@@ -133,10 +136,12 @@ void loop() {
   if (!wifi_is_connected()) {
     wifi_state = WIFI_MODE_WPA_CONNECT;
   }
-
+  lora_handler();
+  
   mqtt_loop();
 
   wifi_handle_client();
   sensor_handler();
   sensor_handle_brightness();
+
 }

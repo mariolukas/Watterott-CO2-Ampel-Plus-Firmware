@@ -395,6 +395,21 @@ void wifi_handle_client() {
             client.print(cfg.ap_password);
             client.print("'>");
 
+            client.print("<label for=lora_app_eui>Lora App EUI</label>");
+            client.print("<input name=lora_app_eui placeholder='00:00:00:00:00:00:00' value='");
+            client.print((int) cfg.lora_app_eui);
+            client.print("'>");
+
+            client.print("<label for=lora_app_key>Lora App KEY</label>");
+            client.print("<input name=lora_app_key placeholder='00:00:00:00:00:00:00' value='");
+            client.print((int) cfg.lora_app_key);
+            client.print("'>");
+
+            client.print("<label for=lora_device_eui>Lora Device EUI</label>");
+            client.print("<input name=lora_device_eui placeholder='00:00:00:00:00:00:00' value='");
+            client.print((int) cfg.lora_device_eui);
+            client.print("'>");
+
             client.print("<label for=buzzer>Buzzer</label>");
             client.print("<select id=buzzer name=buzzer size=2>");
             if (cfg.buzzer_enabled) {

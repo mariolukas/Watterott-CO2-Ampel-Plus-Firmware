@@ -84,6 +84,10 @@ Als Bibliotheken benötigt das Projekt "ArduinoJson", die über den Bibliotheksm
 
 ![Arduino Boards Manager](docs/images/install_lib_json.png)
 
+Außerdem wird für den LoRa Support noch die Bibliothek "LoRa Serialization" benötigt.
+
+![Arduino Boards Manager](docs/images/LoRa_serial.png)
+
 ### Anpassungen
 Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
 

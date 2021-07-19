@@ -26,6 +26,9 @@ void config_set_factory_defaults() {
                                      MQTT_USERNAME,
                                      MQTT_PASSWORD,
                                      MQTT_FORMAT,
+                                     LORA_APP_EUI,
+                                     LORA_APP_KEY,
+                                     LORA_DEVICE_EUI,
                                      LIGHT_ENABLED,
                                      BUZZER_ENABLED};
   config_store.write(_default_config);

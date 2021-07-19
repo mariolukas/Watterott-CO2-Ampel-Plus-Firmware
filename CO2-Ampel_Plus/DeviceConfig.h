@@ -1,6 +1,8 @@
 #ifndef DEVICECONFIG_H
 #define DEVICECONFIG_H
 #include <FlashStorage.h>
+#include <lmic.h>
+#include <hal/hal.h>
 
 typedef struct {
   int change_count;
@@ -15,6 +17,9 @@ typedef struct {
   char mqtt_username[20];
   char mqtt_password[20];
   int mqtt_format;
+  uint8_t lora_app_eui[8];
+  uint8_t lora_app_key[16];
+  uint8_t lora_device_eui[8];
   bool light_enabled;
   bool buzzer_enabled;
 } device_config_t;

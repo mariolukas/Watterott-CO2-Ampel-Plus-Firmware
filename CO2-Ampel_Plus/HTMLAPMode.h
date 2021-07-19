@@ -147,6 +147,12 @@ body {\
 <meta charset=\"UTF-8\">\
 <title>CO2 Ampel Wifi AP</title>\
 </head>\
-<body>");
+<body>\
+<div class=\"tab\">\
+  <button class=\"tablinks\" >General</button>\
+  <button class=\"tablinks\" >WiFi</button>\
+  <button class=\"tablinks\" >MQTT</button>\
+  <button class=\"tablinks\" >LoRa</button>\
+</div>");
 
 const String ap_root_html_footer = F("</body></html>");

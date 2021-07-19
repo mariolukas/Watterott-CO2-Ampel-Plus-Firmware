@@ -54,6 +54,8 @@
  */
 #define MQTT_FORMAT 0 
 
+
+
 //--- Buzzer configuration ---
 #define BUZZER_ENABLED true
 #define BUZZER_VOLUME 255 / 128 // 1-255
@@ -93,6 +95,17 @@
 
 
 #define STARTWERT 500  // 500ppm, CO2 starting value
+
+//--- LORA configruation ---
+#define LORA_APP_EUI { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define LORA_APP_KEY { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define LORA_DEVICE_EUI { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+
+#define LORA_DIO_PIN1 21
+#define LORA_DIO_PIN2 22
+#define LORA_NSS_PIN 20
+#define LORA_TX_INTERVAL 60
+
 
 //--- Only touch if you know what you're doing! ---
 // STATES
