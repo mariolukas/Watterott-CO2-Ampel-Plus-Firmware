@@ -94,7 +94,14 @@ Ein Fehler beim Aufbau des Access Points im AP Modus ist aufgetreten. In der Reg
 
 Es kann jedoch auch bedeuten, dass die Ampel die WLAN Verbindung verloren hat. In diesem Fall laufen die Messungen auf der Ampel weiter, jedoch taucht zwischendurch immer wieder blaues Blinken auf. In diesem Fall sollte die WLAN Verbindung überprüft werden.
 
-![Blaues Licht](docs/images/rambo.jpg)
-
 ### Rotes Blinken während des Starts der Ampel
 Der CO2 Sensor wurde nicht erkannt oder konnte nicht initialisiert werden. Hier kann ein Neustart durch Reset helfen. Sollte der Fehler nicht verschwinden, so kann es sich auch um einen Defekt am CO2 Sensor handeln.
+
+
+### Donations
+
+<center>
+<a href="https://www.paypal.com/donate?hosted_button_id=FHPTBZ43KZGSU">
+  <img width="200" src="https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png" alt="Donate with PayPal" />
+</a>
+</center>
