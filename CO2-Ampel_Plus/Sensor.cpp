@@ -5,7 +5,7 @@
 #include "Buzzer.h"
 #include "Config.h"
 #include "DeviceConfig.h"
-#include "Led.h"
+#include "LED.h"
 #include "NetworkManager.h"
 #if DISPLAY_OUTPUT > 0
 #include <Adafruit_GFX.h>
