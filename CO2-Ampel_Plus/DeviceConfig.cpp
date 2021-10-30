@@ -1,6 +1,6 @@
 #include "DeviceConfig.h"
 #include "Config.h"
-#include "Led.h"
+#include "LED.h"
 FlashStorage(config_store, device_config_t);
 
 bool config_is_initialized() {
