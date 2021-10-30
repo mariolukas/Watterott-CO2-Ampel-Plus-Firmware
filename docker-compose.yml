@@ -1,0 +1,9 @@
+services:
+  arduino-builder:
+    image: arduino-builder
+    build:
+      context: arduino-builder
+    volumes:
+      - type: bind
+        source: ./CO2-Ampel_Plus
+        target: /root/CO2-Ampel_Plus
