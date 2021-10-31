@@ -1,35 +1,24 @@
-PROJECT = CO2-Ampel_Plus
-BOARD_TYPE = co2ampel:samd:sb
-ARDUINO_CLI = arduino-cli
-SERIAL_PORT = COM18
-VERBOSE = 1
+FORMAT_FILES=$(shell find CO2-Ampel_Plus -iname '*.h' -print0 -or -iname '*.cpp' -print0 | xargs -0 echo)
+FORMAT_COMMAND="--style=Chromium -verbose -i $(FORMAT_FILES)"
+FORMAT_TEST_COMMAND="--style=Chromium -verbose --Werror --dry-run $(FORMAT_FILES)"
 
-# Build path -- used to store built binary and object files
-BUILD_DIR=_build
-BUILD_CACHE_DIR=_build_cache
-BUILD_PATH=$(PROJECT)/$(BUILD_DIR)
-BUILD_CACHE_PATH=$(PROJECT)/$(BUILD_CACHE_DIR)
-BUILD_COMMAND=$(ARDUINO_CLI) compile $(VERBOSE_FLAG) --warnings more --build-path=$(BUILD_PATH) --build-cache-path=$(BUILD_CACHE_PATH) -b $(BOARD_TYPE) $(PROJECT)
-CLEAN_COMMAND=rm -rf $(BUILD_PATH)
-
-ifneq ($(V), 0)
-	VERBOSE_FLAG=-v
-else
-	VERBOSE_FLAG=
-endif
-
-.PHONY: all example program clean
-
-all: example
-
-builder:
-	docker-compose build
+.PHONY: clean build-builder build
 
 clean:
-	docker-compose run arduino-builder $(CLEAN_COMMAND)
+	@rm -rf build
 
-build: builder clean
-	docker-compose run arduino-builder $(BUILD_COMMAND)
+build-builder:
+	docker-compose build arduino-builder-co2ampel
 
-# program:
-# 	$(ARDUINO_CLI) upload $(VERBOSE_FLAG) -p $(SERIAL_PORT) --fqbn $(BOARD_TYPE) $(PROJECT)
+build-builder-formatter:
+	docker-compose build arduino-builder-co2ampel-format
+
+build: build-builder
+	docker-compose up arduino-builder-co2ampel
+	docker cp co2ampel-builder:/usr/src/app/build ./
+
+format: build-builder-formatter
+	FORMAT_COMMAND=$(FORMAT_COMMAND) USER="$(shell id -u):$(shell id -g)" docker-compose up arduino-builder-co2ampel-format
+
+format-test: build-builder-formatter
+	FORMAT_COMMAND=$(FORMAT_TEST_COMMAND)  USER="$(shell id -u):$(shell id -g)" docker-compose up arduino-builder-co2ampel-format

@@ -1,5 +1,5 @@
-#include <Arduino.h>
 #include "Buzzer.h"
+#include <Arduino.h>
 #include "Config.h"
 #include "DeviceConfig.h"
 
@@ -10,7 +10,7 @@ void buzzer_init() {
 
 void buzzer_test() {
 #if DEBUG_LOG > 0
-    Serial.print("Buzzer selftest... ");
+  Serial.print("Buzzer selftest... ");
 #endif
   analogWrite(PIN_BUZZER, BUZZER_VOLUME);  // Buzzer on
   delay(1000);

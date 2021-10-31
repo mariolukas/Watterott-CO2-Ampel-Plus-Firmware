@@ -25,17 +25,16 @@ bool wifi_is_connected() {
 }
 
 void wifi_ap_create() {
-
 #if DEBUG_LOG > 0
   Serial.println("Create access point for configuration");
 #endif
-  
+
   ap_mode_activated = true;
-  
+
   led_set_color(LED_COLOR_WIFI_MANAGER);
   led_set_brightness();
   led_update();
-  
+
   if (wifi_status == WL_CONNECTED) {
     WiFi.end();
   }
@@ -50,7 +49,7 @@ void wifi_ap_create() {
   WiFi.macAddress(wifi_mac);
 
   char ap_ssid[20];
-  
+
   sprintf(ap_ssid, "%s %02X:%02X", WIFI_AP_SSID, wifi_mac[4], wifi_mac[5]);
   wifi_status = WiFi.beginAP(ap_ssid, cfg.ap_password);
   if (wifi_status != WL_AP_LISTENING) {
@@ -69,7 +68,7 @@ void wifi_ap_create() {
   }
 }
 
-bool ap_is_active(){
+bool ap_is_active() {
   return ap_mode_activated;
 }
 
@@ -244,9 +243,9 @@ void wifi_handle_client() {
                   cfg.light_enabled = true;
                 }
               }
-              
+
               if ((requestParser.getField("format").length() > 0)) {
-                  cfg.mqtt_format = requestParser.getField("format").toInt();
+                cfg.mqtt_format = requestParser.getField("format").toInt();
               }
 
               /**
@@ -371,7 +370,9 @@ void wifi_handle_client() {
             client.print("'>");
 
             client.print("<label for=port>MQTT Password</label>");
-            client.print("<input type=password name=mqttpass placeholder='password' value='");
+            client.print(
+                "<input type=password name=mqttpass placeholder='password' "
+                "value='");
             client.print(cfg.mqtt_password);
             client.print("'>");
 
@@ -386,12 +387,15 @@ void wifi_handle_client() {
             client.print("'>");
 
             client.print("<label for=pwd>Password</label>");
-            client.print("<input type=password name=pwd placeholder='Passwort' value='");
+            client.print(
+                "<input type=password name=pwd placeholder='Passwort' value='");
             client.print(cfg.wifi_password);
             client.print("'>");
 
             client.print("<label for=ap_pwd>Access Point Passwort</label>");
-            client.print("<input type=password name=ap_pwd placeholder='Passwort' value='");
+            client.print(
+                "<input type=password name=ap_pwd placeholder='Passwort' "
+                "value='");
             client.print(cfg.ap_password);
             client.print("'>");
 
@@ -402,23 +406,25 @@ void wifi_handle_client() {
               client.print("<option value=\"false\">Disabled</option>");
             } else {
               client.print("<option value=\"true\">Enabled</option>");
-              client.print("<option value=\"false\" selected>Disabled</option>");
+              client.print(
+                  "<option value=\"false\" selected>Disabled</option>");
             };
             client.print("</select>");
             client.print("<br><br>");
 
-             client.print("<label for=led>LEDs</label>");
+            client.print("<label for=led>LEDs</label>");
             client.print("<select id=led name=led size=2>");
             if (cfg.light_enabled) {
               client.print("<option value=\"true\" selected>Enabled</option>");
               client.print("<option value=\"false\">Disabled</option>");
             } else {
               client.print("<option value=\"true\">Enabled</option>");
-              client.print("<option value=\"false\" selected>Disabled</option>");
+              client.print(
+                  "<option value=\"false\" selected>Disabled</option>");
             };
             client.print("</select>");
             client.print("<br><br>");
-            
+
             client.print("<label for=format>Format</label>");
             client.print("<select id=format name=format size=2>");
             if (cfg.mqtt_format == 0) {
@@ -436,7 +442,8 @@ void wifi_handle_client() {
             // class=\"btnbox\"><button
             // onclick=\"window.location.href='/calibrate'\"
             // class=\"btn\">Calibration</button></div>");
-            client.print("<input type=submit class=btn value=\"Save and reboot\">");
+            client.print(
+                "<input type=submit class=btn value=\"Save and reboot\">");
             client.print("<br><br>");
             client.print("Firmware: ");
             client.println(VERSION);

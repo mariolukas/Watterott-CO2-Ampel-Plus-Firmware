@@ -28,5 +28,4 @@ void print_wifi_status();
 void print_mac_address(byte mac[]);
 void wifi_handle_client();
 
-
 #endif

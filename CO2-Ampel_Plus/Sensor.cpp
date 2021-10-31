@@ -14,7 +14,7 @@
 
 #if DISPLAY_OUTPUT > 0
 Adafruit_SSD1306 display(128, 64);  // 128x64 Pixel
-//Serial.println("Use SSD1306 display");
+// Serial.println("Use SSD1306 display");
 #endif
 
 SCD30 co2_sensor;
@@ -88,7 +88,7 @@ void sensor_calibration() {
         led_set_color(LED_GREEN);
       } else if (co2 < 600) {
         led_set_color(LED_YELLOW);
-      } else { // >=600
+      } else {  // >=600
         led_set_color(LED_RED);
       }
       led_update();

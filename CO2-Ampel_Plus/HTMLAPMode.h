@@ -3,7 +3,8 @@
  * Confirm Page of AP
  */
 
-const String ap_save_html = F("<html>\
+const String ap_save_html =
+    F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\
@@ -80,7 +81,8 @@ body {\
  * Main Page of  Access Point
  */
 
-const String ap_root_html_header = F("<html>\
+const String ap_root_html_header =
+    F("<html>\
 <head>\
 <title>WiFiNINA_WebServer POST handling</title>\
 <style>\

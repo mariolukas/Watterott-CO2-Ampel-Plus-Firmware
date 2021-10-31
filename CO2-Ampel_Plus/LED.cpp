@@ -1,5 +1,5 @@
-#include <Adafruit_NeoPixel.h>
 #include "LED.h"
+#include <Adafruit_NeoPixel.h>
 #include "Buzzer.h"
 #include "Config.h"
 #include "DeviceConfig.h"
@@ -21,13 +21,12 @@ void fill_led_by_led(uint32_t color) {
 }
 
 void led_failure(uint32_t color) {
-
   ws2812.setPixelColor(0, color);
   ws2812.setPixelColor(1, color);
   ws2812.setPixelColor(2, ws2812.Color(0, 0, 0));
   ws2812.setPixelColor(3, ws2812.Color(0, 0, 0));
   ws2812.setBrightness(100);
-  
+
   ws2812.show();
   delay(500);
   ws2812.setPixelColor(0, ws2812.Color(0, 0, 0));
@@ -109,7 +108,6 @@ void led_adjust_brightness(byte brightness) {
 }
 
 void led_blink(uint32_t color, int intervall) {
-  
   ws2812.fill(ws2812.Color(0, 0, 0), 0, 4);
   // led_set_brightness(led_brightness);
   buzzer_on();  // Buzzer aus
