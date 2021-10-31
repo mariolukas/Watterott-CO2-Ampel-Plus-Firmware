@@ -13,7 +13,7 @@ services:
     entrypoint: [ "/venv/bin/python", "arduino-cli-config.py", "--no-init" ]
 
   arduino-builder-co2ampel-format:
-    image: mfreudenberg/arduino-builder:0.1.1
+    image: mfreudenberg/arduino-builder:0.1.2
     container_name: co2ampel-builder-format
     user: ${USER}
     volumes:

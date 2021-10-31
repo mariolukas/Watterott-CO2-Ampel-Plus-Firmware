@@ -1,0 +1,47 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "browse": {
+                "path": [
+                    "CO2-Ampel_Plus"
+                ]
+            },
+            "includePath": [
+                "~/.arduino15/packages/arduino/tools/CMSIS/4.5.0/CMSIS/Include/",
+                "~/.arduino15/packages/arduino/tools/CMSIS-Atmel/1.2.0/CMSIS/Device/ATMEL/",
+                "~/.arduino15/packages/arduino/hardware/samd/1.8.11/cores/arduino/api/deprecated",
+                "~/.arduino15/packages/arduino/hardware/samd/1.8.11/cores/arduino/api/deprecated-avr-comp",
+                "~/.arduino15/packages/arduino/hardware/samd/1.8.11/cores/arduino",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/variants/co2ampel",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/JC_Button/src",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/WiFi101/src",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/FlashStorage/src",
+                "~/.arduino15/packages/arduino/hardware/samd/1.8.11/libraries/SPI",
+                "~/Arduino/libraries/ArduinoJson/src",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/pubsubclient/src",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/Adafruit_NeoPixel",
+                "~/.arduino15/packages/co2ampel/hardware/samd/1.0.7/libraries/SparkFun_SCD30/src",
+                "~/.arduino15/packages/arduino/hardware/samd/1.8.11/libraries/Wire"
+            ],
+            "defines": [
+                "F_CPU=48000000L",
+                "ARDUINO=10607",
+                "ARDUINO_SAMD_MKR1000",
+                "ARDUINO_ARCH_SAMD",
+                "__SAMD21G18A__",
+                "CRYPTO_WIRE=Wire1",
+                "USB_VID=0x04D8",
+                "USB_PID=0xEACE",
+                "USBCON",
+                "USB_MANUFACTURER=\"Watterott electronic\"",
+                "USB_PRODUCT=\"CO2-Ampel\""
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
