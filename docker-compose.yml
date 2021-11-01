@@ -21,4 +21,4 @@ services:
         source: ./
         target: /usr/src/app/
     entrypoint: [ "clang-format" ]
-    command: ${FORMAT_COMMAND}
+    command: ${FORMAT_COMMAND-}

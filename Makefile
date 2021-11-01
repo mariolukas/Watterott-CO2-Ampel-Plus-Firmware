@@ -5,7 +5,8 @@ FORMAT_TEST_COMMAND="--style=Chromium -verbose --Werror --dry-run $(FORMAT_FILES
 .PHONY: clean local-env build-builder build-builder-formatter build format format-test
 
 clean:
-	@rm -rf build
+	@docker-compose run --entrypoint rm arduino-builder-co2ampel -rf /usr/src/app/build /usr/src/app/build_cache
+	@cd build; rm -rf $(shell cd build; find . -iname "*" ! -iwholename "./.keep" ! -iwholename ".")
 
 local-env:
 	curl -o arduino-builder/arduino-cli-config.py https://raw.githubusercontent.com/washed/arduino-builder/0.1.2/arduino-cli-config.py
