@@ -5,7 +5,7 @@ FORMAT_TEST_COMMAND="--style=Chromium -verbose --Werror --dry-run $(FORMAT_FILES
 .PHONY: clean local-env build-builder build-builder-formatter build format format-test
 
 clean:
-	@docker-compose run --entrypoint rm arduino-builder-co2ampel -rf /usr/src/app/build /usr/src/app/build_cache
+	@docker container rm co2ampel-builder
 	@cd build; rm -rf $(shell cd build; find . -iname "*" ! -iwholename "./.keep" ! -iwholename ".")
 
 local-env:
