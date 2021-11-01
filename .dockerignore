@@ -1,4 +1,5 @@
 build/
+build_local/
 docs/
 CO2-Ampel_Plus/
 .vscode/
