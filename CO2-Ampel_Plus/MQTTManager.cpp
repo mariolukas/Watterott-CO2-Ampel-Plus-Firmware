@@ -7,7 +7,7 @@
 WiFiClient wifi_client;
 PubSubClient mqttClient(wifi_client);
 
-char* willMessage = "disconnected";
+const char* willMessage = "disconnected";
 bool willRetain = true;
 int willQoS = 1;
 
@@ -15,8 +15,8 @@ bool mqtt_connect() {
   device_config_t cfg = config_get_values();
   char willTopic[200];
   char setTopic[200];
-  if (strcmp(cfg.mqtt_broker_address,
-             "127.0.0.1")) { /* prevent connection to localhost */
+  // prevent connection to localhost
+  if (strcmp(cfg.mqtt_broker_address, "127.0.0.1")) {
     sprintf(willTopic, "%s/%s/%s", cfg.mqtt_topic, cfg.ampel_name,
             MQTT_LWT_SUBTOPIC);
     led_set_color(LED_WHITE);
@@ -50,6 +50,7 @@ bool mqtt_connect() {
     }
     return true;
   }
+  return false;
 }
 
 void mqtt_loop() {
