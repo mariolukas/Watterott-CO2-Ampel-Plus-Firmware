@@ -5,7 +5,7 @@
 typedef struct {
   int change_count;
   char wifi_ssid[40];
-  char wifi_password[40];
+  char wifi_password[70];
   char ap_password[40];
   int mqtt_broker_port;
   char mqtt_broker_address[20];
