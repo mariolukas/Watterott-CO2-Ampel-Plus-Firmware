@@ -27,9 +27,9 @@
 #include "Config.h"
 #include "DeviceConfig.h"
 #include "LED.h"
+#include "MQTTManager.h"
 #include "NetworkManager.h"
 #include "Sensor.h"
-#include "MQTTManager.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
 const byte BUTTON_PIN(PIN_SWITCH);
@@ -40,9 +40,9 @@ Button modeButton(BUTTON_PIN);
 int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 
 void setup() {
-#if DEBUG_LOG > 0  
+#if DEBUG_LOG > 0
   while (!Serial) {
-     ; // wait for serial port to connect.
+    ;  // wait for serial port to connect.
   }
 #endif
   Serial.begin(115200);
@@ -126,8 +126,6 @@ void loop() {
       Serial.println("");
       break;
   }
-
-
 
   if (!wifi_is_connected()) {
     wifi_state = WIFI_MODE_WPA_CONNECT;
