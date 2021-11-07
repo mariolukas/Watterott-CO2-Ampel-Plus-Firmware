@@ -203,14 +203,18 @@ void sensor_handler() {
   }
 
   // Ampel
-  if (ampel < START_YELLOW) {
+  if (ampel < START_GREEN) {
+    led_set_color(LED_BLUE);
+  } else if (ampel < START_YELLOW) {
     led_set_color(LED_GREEN);
   } else if (ampel < START_RED) {
     led_set_color(LED_YELLOW);
   } else if (ampel < START_RED_BLINK) {
     led_set_color(LED_RED);
-  } else {  // rot blinken
-    led_blink(LED_RED, 500);
+  } else if (ampel < START_VIOLET) {
+    led_blink(LED_RED, 1000);
+  } else {
+    led_set_color(LED_VIOLET);
   }
 
   led_update();  // zeige Farbe

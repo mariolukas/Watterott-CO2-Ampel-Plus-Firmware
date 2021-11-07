@@ -15,18 +15,20 @@
 //--- CO2 limit values ---
 // Covid Praevention:
 // https://www.umwelt-campus.de/forschung/projekte/iot-werkstatt/ideen-zur-corona-krise
-#define START_YELLOW 800      // >=  800ppm
-#define START_RED 1000        // >= 1000ppm
-#define START_RED_BLINK 1200  // >= 1200ppm
-#define START_BUZZER 1400     // >= 1400ppm
+/*
+#define START_YELLOW 800        // >=  800ppm
+#define START_RED 1000          // >= 1000ppm
+#define START_RED_BLINK 1200    // >= 1200ppm
+#define START_BUZZER 1400       // >= 1400ppm
+*/
 
 // Ermuedung
-/*
+#define START_GREEN 550
 #define START_YELLOW 1000       // >= 1000ppm
-#define START_RED 1200          // >= 1200ppm
-#define START_RED_BLINK 1400    // >= 1400ppm
+#define START_RED 1400          // >= 1200ppm
+#define START_RED_BLINK 1600    // >= 1400ppm
 #define START_BUZZER 1600       // >= 1600ppm
-*/
+#define START_VIOLET 1800
 
 //--- WiFi configuration ---
 #define WIFI_AP_SSID "CO2 Ampel"     // access point SSID
