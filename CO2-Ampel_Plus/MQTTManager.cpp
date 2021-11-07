@@ -97,7 +97,7 @@ void mqtt_send_value(int co2, float temp, int hum, int lux) {
 
     } else {  // sending data in influxdb format
 
-      sprintf(mqttMessage, "co2ampel,name=%s co2=%i,temp=%s,hum=%i,lux=%i",
+      sprintf(mqttMessage, "co2ampel,name=%s,co2=%i,temp=%s,hum=%i,lux=%i",
               cfg.ampel_name, co2, tempMessage, hum, lux);
       if (mqttClient.publish(cfg.mqtt_topic, mqttMessage)) {
         Serial.println("Data publication successfull.");
