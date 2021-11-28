@@ -90,12 +90,12 @@ void mqtt_send_value(int co2, float temp, int hum, int lux) {
             "large.");
       };
 
-    } else {    // sending data in influxdb format 
-        
+    } else {    // sending data in influxdb format
+
       sprintf(mqttMessage, "co2ampel,name=%s co2=%i,temp=%s,hum=%i,lux=%i", cfg.ampel_name, co2, tempMessage, hum, lux );
       if (mqttClient.publish(cfg.mqtt_topic, mqttMessage)) {
         Serial.println("Data publication successfull.");
-        
+
 #if DEBUG_LOG > 0
         Serial.print("Message: ");
         Serial.println(mqttMessage);
@@ -108,10 +108,10 @@ void mqtt_send_value(int co2, float temp, int hum, int lux) {
             "Data publication failed, either connection lost or message too "
             "large.");
       };
-          
+
     }
-    
-    
+
+
   } else {
     Serial.println("Data publication failed, client is not connected. Trying to reconnect.");
     mqtt_connect();
@@ -140,15 +140,11 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     return;
   }
   // Retrieve the values
-  if (doc.containsKey("light_enabled")) {
-    String light_enabled = doc["light_enabled"];
-    if (light_enabled.equalsIgnoreCase(F("true"))) {
-      Serial.println("Light enabled via MQTT");
-      cfg.light_enabled = true;
-    } else if (light_enabled.equalsIgnoreCase(F("false"))) {
-      Serial.println("Light disabled via MQTT");
-      cfg.light_enabled = false;
-    }
+  if (doc.containsKey("led_brightness")) {
+    String led_brightness = doc["led_brightness"];
+    cfg.led_brightness = led_brightness.toInt();
+    Serial.print("LED brightness set via MQTT to");
+    Serial.println(cfg.led_brightness);
     config_set_values(cfg);
     led_set_brightness();
   }

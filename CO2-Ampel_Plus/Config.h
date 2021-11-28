@@ -49,10 +49,10 @@
 #define MQTT_SENSOR_LUX 891
 
 /* MQTT Data Format.
- * 0 - JSON 
+ * 0 - JSON
  * 1 - InfluxDB Line Format
  */
-#define MQTT_FORMAT 0 
+#define MQTT_FORMAT 0
 
 //--- Buzzer configuration ---
 #define BUZZER_ENABLED true
@@ -60,7 +60,7 @@
 
 //--- LED configuration ---
 #define LIGHT_ENABLED true
-#define BRIGHTNESS 180          // 1-255
+#define BRIGHTNESS 50           // 1-100%
 #define BRIGHTNESS_DARK 5       // 1-100%
 #define NUMBER_OF_WS2312_PIXELS 4
 #define NUMBER_OF_WS2812_LEDS 4

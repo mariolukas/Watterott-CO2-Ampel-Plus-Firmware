@@ -10,7 +10,7 @@ Adafruit_NeoPixel ws2812 = Adafruit_NeoPixel(NUMBER_OF_WS2312_PIXELS,
                                              NEO_GRB + NEO_KHZ800);
 byte connecting_tick = 0;
 byte led_tick = 0;
-byte led_brightness = BRIGHTNESS;
+bool led_darkmode = 0;
 
 void fill_led_by_led(uint32_t color) {
   for (int i = 0; i < 4; i++) {
@@ -27,7 +27,7 @@ void led_failure(uint32_t color) {
   ws2812.setPixelColor(2, ws2812.Color(0, 0, 0));
   ws2812.setPixelColor(3, ws2812.Color(0, 0, 0));
   ws2812.setBrightness(100);
-  
+
   ws2812.show();
   delay(500);
   ws2812.setPixelColor(0, ws2812.Color(0, 0, 0));
@@ -97,26 +97,29 @@ void led_set_color(uint32_t color) {
 
 void led_set_brightness() {
   device_config_t cfg = config_get_values();
-  if (cfg.light_enabled || ap_is_active()) {
-    ws2812.setBrightness(led_brightness);
+  if (cfg.led_brightness > 0 || ap_is_active()) {
+
+    if (led_darkmode == 1) {
+      ws2812.setBrightness(255 / (100 / BRIGHTNESS_DARK));
+    } else {
+      ws2812.setBrightness(255 / (100 / cfg.led_brightness));
+    }
   } else {
     ws2812.setBrightness(0);
   }
 }
 
-void led_adjust_brightness(byte brightness) {
-  led_brightness = brightness;
+void led_set_darkmode(bool darkmode) {
+  led_darkmode = darkmode;
 }
 
 void led_blink(uint32_t color, int intervall) {
-  
+
   ws2812.fill(ws2812.Color(0, 0, 0), 0, 4);
-  // led_set_brightness(led_brightness);
   buzzer_on();  // Buzzer aus
   ws2812.show();
   delay(intervall);
   ws2812.fill(color, 0, 4);  // rot maximale Helligkeit
-  // led_adjust_brigh(led_brightness);
   buzzer_off();
   ws2812.show();
   delay(intervall);

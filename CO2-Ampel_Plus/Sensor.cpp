@@ -239,11 +239,11 @@ void sensor_handle_brightness() {
     if (light < LIGHT_DARK && dunkel == 0) {
       dunkel = 1;
       co2_sensor.setMeasurementInterval(INTERVAL_DARK);
-      led_adjust_brightness(255 / (100 / BRIGHTNESS_DARK));
+      led_set_darkmode(1);
     } else if (dunkel == 1) {
       dunkel = 0;
       co2_sensor.setMeasurementInterval(INTERVAL);
-      led_adjust_brightness(255);  // 0...255
+      led_set_darkmode(0);
     }
   }
 }

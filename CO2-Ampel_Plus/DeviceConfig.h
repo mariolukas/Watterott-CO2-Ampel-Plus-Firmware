@@ -15,7 +15,7 @@ typedef struct {
   char mqtt_username[20];
   char mqtt_password[20];
   int mqtt_format;
-  bool light_enabled;
+  int led_brightness;
   bool buzzer_enabled;
 } device_config_t;
 
