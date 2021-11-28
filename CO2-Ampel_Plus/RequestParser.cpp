@@ -124,14 +124,26 @@ String RequestParser::getPayload() {
 }
 
 String RequestParser::getField(String key) {
-  int keyIndex = _payload.indexOf(key);
+  // Make sure, the first field name in the _payload starts with &
+  String searchPayload = "&";
+  searchPayload += _payload;
+
+  // Search the field name by &key (like &ampel)
+  // This prevents that a field value is unfortunately used as a field name.
+  String searchKey = "&";
+  searchKey += key;
+
+  int keyIndex = searchPayload.indexOf(searchKey);
 
   if (keyIndex == -1) {
     return "";
   }
 
-  int startIndex = _payload.indexOf("=", keyIndex);
-  int stopIndex = _payload.indexOf("&", keyIndex);
+  // Jump over the field name prefix "&"
+  keyIndex += 1;
 
-  return urldecode(_payload.substring(startIndex + 1, stopIndex));
+  int startIndex = searchPayload.indexOf("=", keyIndex);
+  int stopIndex = searchPayload.indexOf("&", keyIndex);
+
+  return urldecode(searchPayload.substring(startIndex + 1, stopIndex));
 }
