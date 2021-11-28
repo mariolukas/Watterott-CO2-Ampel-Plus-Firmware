@@ -16,7 +16,7 @@ void led_failure(uint32_t color);
 void led_wifi_ap_mode();
 void led_init();
 void led_set_brightness();
-void led_adjust_brightness(byte brightness);
+void led_set_darkmode(bool darkmode);
 
 void led_broker_connection_fail();
 
