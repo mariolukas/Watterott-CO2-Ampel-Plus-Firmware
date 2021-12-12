@@ -10,12 +10,6 @@ bool muted = false;
 
 uint8_t buzzer_volume = BUZZER_VOLUME;
 
-void old_test_buzzer() {
-  analogWrite(PIN_BUZZER, BUZZER_VOLUME);
-  delay(1000);
-  analogWrite(PIN_BUZZER, 0);
-}
-
 void buzzer_mute() {
   mute_requested = true;
 }
@@ -130,17 +124,6 @@ void buzzer() {
   analogWrite(PIN_BUZZER, requested_volume);
   buzzer_volume = requested_volume;
 }
-
-/*
-// TODO: Implement this more generically
-void run_until_queue_size(uint32_t stop_queue_size) {
-  auto queue_size = buzzer_state_queue.size();
-  do {
-    ts.execute();
-    queue_size = buzzer_state_queue.size();
-  } while (queue_size > stop_queue_size);
-}
-*/
 
 void buzzer_set_default(buzzer_state_t buzzer_state) {
   buzzer_default_state = buzzer_state;

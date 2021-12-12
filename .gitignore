@@ -3,3 +3,4 @@ build_local/
 arduino-builder/
 build_cache/
 flash_dumps/
+random_notes.md
