@@ -4,6 +4,43 @@ Dieses Repository beinhaltet eine alternative Firmware für die Watterott CO2 Am
 
 ## Funktion
 
+### Interfaces
+
+Die Ampel bietet zu Zeit drei unterschiedliche Möglichkeiten der Daten Bereitstellung. 
+
+* MQTT
+* Web (HTML)
+* Web (JSON)
+
+##### MQTT
+
+Die Daten können an einen MQTT Server versendet werden. Siehe "MQTT Einrichten".
+
+##### Web (HTML)
+
+Nach der Einrichtung der WiFi Verbindung kann über die IP Adresse das Benutzer Interface der Ampel aufgerufen werden. Siehe "WiFi Einrichten"
+
+##### Web (JSON)
+
+Die Daten der Ampel können zusätzlich zu den beiden bereits genannten Methoden über eine JSON Route abgerufen werden.
+
+```
+http://[ampel_IP]/status.json
+```
+
+Das zurückgelieferte JSON Objekt ist recht simpel und sieht wie folgt aus: 
+
+```
+{
+	"co2": "967",
+	"temp":" 12.98 ",
+	"hum":"73.25",
+	"lux":"1024", 
+	"mqtt": "1",
+	"firmware":"v3.0.0"
+}
+```
+
 ### Tastenbelegung
 
 Die Ampel verfügt über zwei Tasten. Die von der USB Buchse aus links gelegene Taste ist der Reset Taster, die rechte die Mode Taste. Die weiteren Funktionen sind im folgenden näher beschrieben.
@@ -80,7 +117,13 @@ Als Board wählt man dann "CO2 Ampel" aus. Wenn die im nächsten Abschnitt aufge
 Die "Arduino SAMD Boards" müssen ebenfalls installiert sein.
 
 ### Benötigtes Bibliotheken
-Als Bibliotheken benötigt das Projekt "ArduinoJson", die über den Bibliotheksmanager (Werkzeuge -> Bibliotheken verwalten) installiert werden muss.
+
+Die folgenden zusätzlichen Bibliotheken werden zum Kompilieren des Projekts benötigt: 
+
+* [WiFiWebServer](https://github.com/khoih-prog/WiFiWebServer)
+* [ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
+
+welche über den Bibliotheksmanager (Werkzeuge -> Bibliotheken verwalten) installiert werden können.
 
 ![Arduino Boards Manager](docs/images/install_lib_json.png)
 

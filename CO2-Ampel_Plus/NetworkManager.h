@@ -1,15 +1,17 @@
 #ifndef NETWORK_H
 #define NETWORK_H
-#include <SPI.h>
-#include <WiFi101.h>
 #include "Buzzer.h"
-#include "HTMLAPMode.h"
-#include "HTMLWPAMode.h"
 #include "LED.h"
 #include "MQTTManager.h"
 #include "Sensor.h"
 
+
 bool wifi_is_connected();
+
+
+void handleNotFound();
+void handleRoot();
+void handleCSSFile();
 
 void wifi_ap_create();
 
@@ -27,6 +29,7 @@ void print_wifi_status();
 
 void print_mac_address(byte mac[]);
 void wifi_handle_client();
+void init_webserver_routes();
 
 
 #endif

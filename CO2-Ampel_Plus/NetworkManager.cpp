@@ -1,8 +1,16 @@
 #include "NetworkManager.h"
 #include "Config.h"
 #include "DeviceConfig.h"
-#include "RequestParser.h"
 #include "Sensor.h"
+#include "HTMLStyles.h"
+#include "HTMLJavaScript.h"
+#include "HTMLStatic.h"
+#include <WiFiWebServer.h>
+
+device_config_t cfg = config_get_values();
+int wifi_status = WL_IDLE_STATUS;
+byte wifi_mac[6];
+bool ap_mode_activated = false;
 
 char mdnsName[] = "wifi101";  // the MDNS name that the board will respond to
                               // after WiFi settings have been provisioned
@@ -10,15 +18,320 @@ char mdnsName[] = "wifi101";  // the MDNS name that the board will respond to
 // the name above, so "wifi101" will be accessible on
 // the MDNS name "wifi101.local".
 
-WiFiServer server(80);
+WiFiWebServer server(80);
 
-// Create a MDNS responder to listen and respond to MDNS name requests.
-// WiFiMDNSResponder mdnsResponder;
 
-device_config_t cfg = config_get_values();
-int wifi_status = WL_IDLE_STATUS;
-byte wifi_mac[6];
-bool ap_mode_activated = false;
+bool isAuthenticated(){
+ 
+  if (server.hasHeader(F("Cookie"))){
+    String cookie = server.header(F("Cookie"));
+    if (cookie.indexOf(F("CO2SESSIONID=1")) != -1){
+      Serial.println(F("Authentication Successful"));
+      return true;
+    }
+  }
+  return false;
+}
+
+void handleRoot(){  
+  server.send(200, F("text/html"), root_html);
+}
+
+void handleNotFound() {
+  
+  String message = F("File Not Found\n\n");
+  
+  message += F("URI: ");
+  message += server.uri();
+  message += F("\nMethod: ");
+  message += (server.method() == HTTP_GET) ? F("GET") : F("POST");
+  message += F("\nArguments: ");
+  message += server.args();
+  message += F("\n");
+  
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  
+  server.send(404, F("text/plain"), message);
+  
+}
+
+/**
+ * Save Settings Handler
+ */
+void handleSaveSettings(){
+  if (server.method() != HTTP_POST){
+    server.send(405, F("text/plain"), F("Method Not Allowed"));
+  } else {
+
+   if (server.hasArg(F("mqtt_broker_address"))){
+      server.arg(F("mqtt_broker_address")).toCharArray(cfg.mqtt_broker_address, sizeof(cfg.mqtt_broker_address));;
+   }
+
+   if (server.hasArg(F("mqtt_broker_port"))){
+      cfg.mqtt_broker_port = server.arg(F("mqtt_broker_port")).toInt();
+   }
+
+   if (server.hasArg(F("mqtt_topic"))){
+      server.arg(F("mqtt_topic")).toCharArray(cfg.mqtt_topic, sizeof(cfg.mqtt_topic));
+   }
+
+   if (server.hasArg(F("mqtt_username"))){
+      server.arg(F("mqtt_username")).toCharArray(cfg.mqtt_username, sizeof(cfg.mqtt_username));
+   }
+
+   if (server.hasArg(F("mqtt_password"))){
+      server.arg(F("mqtt_password")).toCharArray(cfg.mqtt_password, sizeof(cfg.mqtt_password));
+   }
+
+   if (server.hasArg(F("ampel_name"))){
+      server.arg(F("ampel_name")).toCharArray(cfg.ampel_name, sizeof(cfg.ampel_name));
+   }
+
+   if (server.hasArg(F("wifi_ssid"))){
+      server.arg(F("wifi_ssid")).toCharArray(cfg.wifi_ssid, sizeof(cfg.wifi_ssid));
+   }
+
+   if (server.hasArg(F("wifi_password"))){
+      server.arg(F("wifi_password")).toCharArray(cfg.wifi_password,sizeof(cfg.wifi_password));
+   }
+
+   if (server.hasArg(F("ap_password"))){
+      server.arg(F("ap_password")).toCharArray(cfg.ap_password,sizeof(cfg.ap_password));
+   }
+
+  if (server.hasArg("buzzer_enabled")) {
+     if (server.arg("buzzer_enabled") == "false") {
+        cfg.buzzer_enabled = false;
+     } else {
+        cfg.buzzer_enabled = true;
+     }
+  }
+
+  if (server.hasArg("light_enabled")) {
+    if (server.arg("light_enabled") == "false") {
+      cfg.light_enabled = false;
+    } else {
+      cfg.light_enabled = true;
+    }
+  }
+              
+  if (server.hasArg("mqtt_format")) {
+      cfg.mqtt_format =  server.arg(F("mqtt_format")).toInt();
+  }
+
+   config_set_values(cfg);
+
+  
+   server.sendHeader(F("Location"), F("/"));
+   /*
+   server.sendHeader(F("Cache-Control"), F("no-cache"));
+   server.sendHeader(F("Set-Cookie"), F("CO2SESSIONID=0"));
+   */
+   server.send(301);
+    
+  }
+              
+  server.stop();
+  NVIC_SystemReset();
+}
+
+/**
+ * Request Handler for Settings Form
+ */
+void handleSettings(){
+
+  /*
+  if (!isAuthenticated()){
+    server.sendHeader(F("Location"), F("/login"));
+    server.sendHeader(F("Cache-Control"), F("no-cache"));
+    server.send(301);
+    
+    return;
+  }
+  */
+
+  server.sendContent(settings_header_html);
+  
+  server.sendContent(F("<label for=mqtt_broker_address>MQTT Broker IP</label>"));
+  server.sendContent(F("<input name=mqtt_broker_address placeholder='127.0.0.1' value='"));
+  server.sendContent(cfg.mqtt_broker_address);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=mqtt_broker_port>MQTT Broker Port</label>"));
+  server.sendContent(F("<input name=mqtt_broker_port placeholder='1883' value='"));
+  server.sendContent((const String) cfg.mqtt_broker_port);
+  server.sendContent("'>");
+
+  server.sendContent(F("<label for=mqtt_topic>MQTT Base Topic</label>"));
+  server.sendContent(F("<input name=mqtt_topic placeholder='sensors' value='"));
+  server.sendContent(cfg.mqtt_topic);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=mqtt_username>MQTT Username</label>"));
+  server.sendContent(F("<input name=mqtt_username placeholder='username' value='"));
+  server.sendContent(cfg.mqtt_username);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=mqtt_password>MQTT Password</label>"));
+  server.sendContent(F("<input type=password name=mqtt_password placeholder='password' value='"));
+  server.sendContent(cfg.mqtt_password);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=ampel_name>Ampel Name</label>"));
+  server.sendContent(F("<input name=ampel_name placeholder='Ampel_1' value='"));
+  server.sendContent(cfg.ampel_name);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=wifi_ssid>SSID</label>"));
+  server.sendContent(F("<input name=wifi_ssid placeholder='SSID' value='"));
+  server.sendContent(cfg.wifi_ssid);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=wifi_password>Password</label>"));
+  server.sendContent(F("<input type=password name=wifi_password placeholder='Passwort' value='"));
+  server.sendContent(cfg.wifi_password);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label for=ap_password>AP/Login Passwort</label>"));
+  server.sendContent(F("<input type=password name=ap_password placeholder='Passwort' value='"));
+  server.sendContent(cfg.ap_password);
+  server.sendContent(F("'>"));
+
+  server.sendContent(F("<label class=\"select-label\" for=buzzer_enabled>Buzzer</label>"));
+  server.sendContent(F("<select class=\"select\" id=buzzer name=buzzer_enabled size=1>"));
+  if (cfg.buzzer_enabled) {
+    server.sendContent(F("<option value=\"true\" selected>Enabled</option>"));
+    server.sendContent(F("<option value=\"false\">Disabled</option>"));
+  } else {
+    server.sendContent(F("<option value=\"true\">Enabled</option>"));
+    server.sendContent(F("<option value=\"false\" selected>Disabled</option>"));
+  };
+  server.sendContent(F("</select><br><br>"));
+
+  server.sendContent(F("<label class=\"select-label\" for=light_enabled>LEDs</label>"));
+  server.sendContent(F("<select class=\"select\" id=led name=light_enabled size=1>"));
+  if (cfg.light_enabled) {
+    server.sendContent(F("<option value=\"true\" selected>Enabled</option>"));
+    server.sendContent(F("<option value=\"false\">Disabled</option>"));
+  } else {
+    server.sendContent(F("<option value=\"true\">Enabled</option>"));
+    server.sendContent(F("<option value=\"false\" selected>Disabled</option>"));
+  };
+  server.sendContent(F("</select><br><br>"));
+
+  server.sendContent(F("<label class=\"select-label\" for=mqtt_format>MQTT Format</label>"));
+  server.sendContent(F("<select class=\"select\" id=format name=mqtt_format size=1>"));
+  if (cfg.mqtt_format == 0) {
+    server.sendContent(F("<option value=\"0\" selected>JSON</option>"));
+    server.sendContent(F("<option value=\"1\">Influx</option>"));
+  } else {
+    server.sendContent(F("<option value=\"0\">JSON</option>"));
+    server.sendContent(F("<option value=\"1\" selected>Influx</option>"));
+  };
+  server.sendContent(F("</select>"));
+
+  server.sendContent(F("<input type=submit class=btn value=\"Save and reboot\"><br><br>"));
+
+  server.sendContent(F("Firmware: "));
+  server.sendContent(VERSION);
+  server.sendContent(F("</form>"));
+  
+  server.sendContent(settings_footer_html);
+
+}
+
+/*
+void handleLogin(){
+  String msg;
+  
+  if (server.hasHeader(F("Cookie"))){
+#if DEBUG_LOG > 0
+    Serial.print(F("Found cookie: "));
+#endif
+    String cookie = server.header(F("Cookie"));
+#if DEBUG_LOG > 0
+    Serial.println(cookie);
+#endif
+  }
+
+  if (server.hasArg(F("login_password"))){
+    if (server.arg(F("login_password")).equals(cfg.ap_password)){
+      server.sendHeader(F("Location"), F("/settings"));
+      server.sendHeader(F("Cache-Control"), F("no-cache"));
+      server.sendHeader(F("Set-Cookie"), F("CO2SESSIONID=1"));
+      server.send(301);
+      Serial.println(F("Log in Successful"));
+      return;
+    }
+    msg = F("Wrong password! try again.");
+  
+  }
+  
+  server.send(200, F("text/html"), login_html);
+}
+
+void handleLogout(){
+   server.sendHeader(F("Location"), F("/"));
+   server.sendHeader(F("Cache-Control"), F("no-cache"));
+   server.sendHeader(F("Set-Cookie"), F("CO2SESSIONID=0"));
+   server.send(301);
+}
+*/
+
+void handleJSONResponse(){
+  
+  char jsonMessage[512];
+  char tempMessage[10];
+  char humMessage[10];
+  char versionNumber[10];
+  float temp = get_temperature();
+  float hum = get_humidity();
+  sprintf(tempMessage, "%d.%02d", (int)temp, (int)(temp*100)%100);
+  sprintf(humMessage, "%d.%02d", (int)hum, (int)(hum*100)%100);
+  sprintf(versionNumber, "%s", VERSION);
+
+  
+  sprintf(jsonMessage,
+        "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%s\",\"lux\":\"%i\", \"mqtt\":\"%i\", \"firmware\":\"%s\"}",
+        get_co2(), tempMessage, humMessage, get_brightness(), mqtt_broker_connected(), versionNumber);
+  
+  server.send(200,F("application/json"), jsonMessage);
+}
+
+void handleCSSAmpelFile(){
+  server.send(200,F("text/css"), css_styles_ampel);
+}
+
+void handleCSSGeneralFile(){
+  server.send(200,F("text/css"), css_styles_general);
+}
+
+void handleJavaScriptRequest(){
+   server.send(200,F("text/javascript"), javascript);
+}
+
+void init_webserver_routes(int wifi_status){
+  server.on(F("/styles.css"), handleCSSGeneralFile);
+
+  if(wifi_status == WL_CONNECTED){
+      server.on(F("/ampel.css"), handleCSSAmpelFile);
+      server.on(F("/scripts.js"), handleJavaScriptRequest);
+      server.on(F("/sensors.json"), handleJSONResponse);
+      /*
+      server.on(F("/settings"), handleSettings);
+      server.on(F("/login"), handleLogin);
+      server.on(F("/logout"), handleLogout);
+      */
+      server.on(F("/"), handleRoot);
+  } else {
+      server.on(F("/"), handleSettings);
+      server.on(F("/save"), handleSaveSettings);
+  }
+  
+}
+
 
 bool wifi_is_connected() {
   return WiFi.status() == WL_CONNECTED;
@@ -60,7 +373,8 @@ void wifi_ap_create() {
     }
   }
   delay(5000);
-
+  
+  init_webserver_routes(wifi_status);
   print_wifi_status();
   server.begin();
 
@@ -105,6 +419,7 @@ int wifi_wpa_connect() {
       Serial.println(" failed");
     }
   } else {
+    init_webserver_routes(wifi_status);
     print_wifi_status();
     server.begin();
     mqtt_connect();
@@ -143,8 +458,9 @@ void print_mac_address(byte mac[]) {
   Serial.println();
 }
 
+
 void wifi_handle_client() {
-  bool reboot = false;
+
   // compare the previous status to the current status
   if (wifi_status != WiFi.status()) {
     // it has changed update the variable
@@ -160,306 +476,9 @@ void wifi_handle_client() {
     }
   }
 
-  WiFiClient client = server.available();  // listen for incoming clients
+  server.handleClient();
+  delay(15);
+  
+ // WiFiClient client = server.available();  // listen for incoming clients
 
-  if (client) {
-    RequestParser requestParser = RequestParser(client);
-    // if you get a client,
-    // print a message out the serial port
-    Serial.println(F("New client Connected"));
-    // make a String to hold incoming data from the client
-    String currentLine = "";
-
-    while (client.connected()) {
-      // loop while the client's connected
-      if (client.available()) {
-        // if there's bytes to read from the client,
-        char c = client.read();  // read a byte, then
-        requestParser.addHeaderCharacter(c);
-        Serial.write(c);  // print it out the serial monitor
-
-        if (c == '\n') {
-          if (currentLine.length() == 0) {
-            requestParser.grabPayload();
-            if (requestParser.getPayload().length() > 0) {
-              /**
-               * Fill the config with the post values.
-               */
-              Serial.print("Broker ist ");
-              Serial.println(requestParser.getField("broker"));
-
-              if ((requestParser.getField("ssid").length() > 0)) {
-                requestParser.getField("ssid").toCharArray(cfg.wifi_ssid, 40);
-              }
-
-              if ((requestParser.getField("pwd").length() > 0)) {
-                requestParser.getField("pwd").toCharArray(cfg.wifi_password,
-                                                          40);
-              }
-
-              if ((requestParser.getField("ap_pwd").length() > 0)) {
-                requestParser.getField("ap_pwd").toCharArray(cfg.ap_password,
-                                                             40);
-              }
-
-              if ((requestParser.getField("broker").length() > 0)) {
-                requestParser.getField("broker").toCharArray(
-                    cfg.mqtt_broker_address, 20);
-              }
-
-              if ((requestParser.getField("port").length() > 0)) {
-                cfg.mqtt_broker_port = requestParser.getField("port").toInt();
-              }
-
-              if ((requestParser.getField("topic").length() > 0)) {
-                requestParser.getField("topic").toCharArray(cfg.mqtt_topic, 20);
-              }
-
-              if ((requestParser.getField("mqttuser").length() > 0)) {
-                requestParser.getField("mqttuser")
-                    .toCharArray(cfg.mqtt_username, 20);
-              }
-
-              if ((requestParser.getField("mqttpass").length() > 0)) {
-                requestParser.getField("mqttpass")
-                    .toCharArray(cfg.mqtt_password, 20);
-              }
-
-              if ((requestParser.getField("ampel").length() > 0)) {
-                requestParser.getField("ampel").toCharArray(cfg.ampel_name, 40);
-              }
-
-              if ((requestParser.getField("buzzer").length() > 0)) {
-                if (requestParser.getField("buzzer") == "false") {
-                  cfg.buzzer_enabled = false;
-                } else {
-                  cfg.buzzer_enabled = true;
-                }
-              }
-
-              if ((requestParser.getField("led").length() > 0)) {
-                if (requestParser.getField("led") == "false") {
-                  cfg.light_enabled = false;
-                } else {
-                  cfg.light_enabled = true;
-                }
-              }
-              
-              if ((requestParser.getField("format").length() > 0)) {
-                  cfg.mqtt_format = requestParser.getField("format").toInt();
-              }
-
-              /**
-               * Reboot if required.
-               */
-              if (reboot) {
-                config_set_values(cfg);
-                client.stop();
-                NVIC_SystemReset();
-              }
-              cfg = config_get_values();
-            }
-            break;
-          } else {
-            // if you got a newline, then clear currentLine:
-            currentLine = "";
-          }
-        } else if (c != '\r') {
-          // if you got anything else but a carriage return character,
-          currentLine += c;  // add it to the end of the currentLine
-        }
-
-        /**
-         * WPA Connection Routes
-         */
-        if (wifi_status == WL_CONNECTED) {
-          if (currentLine == F("GET /")) {
-            cfg = config_get_values();
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.print(wpa_root_html_header);
-            client.print(cssampel);
-            client.print(wpa_root_html_middle);
-            client.print("<div class=\"box\"><h1>CO2 Ampel Status</h1>");
-            client.print("<span class=\"css-ampel");
-            int ampel = get_co2();
-            if (ampel < START_YELLOW) {
-              client.print(" ampelgruen");
-            } else if (ampel < START_RED) {
-              client.print(" ampelgelb");
-            } else if (ampel < START_RED_BLINK) {
-              client.print(" ampelrot");
-            } else {  // rot blinken
-              client.print(" ampelrotblinkend");
-            }
-            client.print("\"><span class=\"cssampelspan\"></span></span>");
-            client.print("<br><br>");
-            client.print("Co2: ");
-            client.print(get_co2());
-            client.print(" ppm<br>Temperatur: ");
-            client.print(get_temperature());
-            client.print(" &ordm;C<br>Luftfeuchtigkeit: ");
-            client.print(get_humidity());
-            client.print(" %<br>Helligkeit: ");
-            int brgt = get_brightness();
-            if (brgt == 1024) {
-              client.print("--");
-            } else {
-              client.print(brgt);
-            }
-
-            client.print("<br><br>");
-            client.print("MQTT Broker is ");
-            if (!mqtt_broker_connected()) {
-              client.print("not ");
-            }
-            client.print("connected.");
-            client.print("<br><br>");
-            client.print("Firmware: ");
-            client.println(VERSION);
-            client.print("<br>");
-            client.print("</div>");
-            client.print(wpa_root_html_footer);
-            client.println();
-          }
-
-          // Check to see if the client request was "GET /H" or "GET /L":
-          if (currentLine.endsWith(F("POST /save"))) {
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.print(ap_save_html);
-            client.println();
-            config_set_values(cfg);
-
-            reboot = true;
-          }
-        }
-
-        /**
-         * Access Point Routes
-         */
-        if (wifi_status == WL_AP_CONNECTED) {
-          if (currentLine.endsWith(F("GET /"))) {
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.print(ap_root_html_header);
-            client.print(
-                "<form class=\"box\" action=\"/save\" "
-                "method=\"POST\" "
-                "name=\"loginForm\"><h1>Settings</h1>");
-            client.print("<label for=broker>MQTT Broker IP</label>");
-            client.print("<input name=broker placeholder='127.0.0.1' value='");
-            client.print(cfg.mqtt_broker_address);
-            client.print("'>");
-
-            client.print("<label for=port>MQTT Broker Port</label>");
-            client.print("<input name=port placeholder='1883' value='");
-            client.print(cfg.mqtt_broker_port);
-            client.print("'>");
-
-            client.print("<label for=port>MQTT Base Topic</label>");
-            client.print("<input name=topic placeholder='sensors' value='");
-            client.print(cfg.mqtt_topic);
-            client.print("'>");
-
-            client.print("<label for=port>MQTT Username</label>");
-            client.print("<input name=mqttuser placeholder='username' value='");
-            client.print(cfg.mqtt_username);
-            client.print("'>");
-
-            client.print("<label for=port>MQTT Password</label>");
-            client.print("<input type=password name=mqttpass placeholder='password' value='");
-            client.print(cfg.mqtt_password);
-            client.print("'>");
-
-            client.print("<label for=ampel>Ampel Name</label>");
-            client.print("<input name=ampel placeholder='Ampel_1' value='");
-            client.print(cfg.ampel_name);
-            client.print("'>");
-
-            client.print("<label for=broker>SSID</label>");
-            client.print("<input name=ssid placeholder='SSID' value='");
-            client.print(cfg.wifi_ssid);
-            client.print("'>");
-
-            client.print("<label for=pwd>Password</label>");
-            client.print("<input type=password name=pwd placeholder='Passwort' value='");
-            client.print(cfg.wifi_password);
-            client.print("'>");
-
-            client.print("<label for=ap_pwd>Access Point Passwort</label>");
-            client.print("<input type=password name=ap_pwd placeholder='Passwort' value='");
-            client.print(cfg.ap_password);
-            client.print("'>");
-
-            client.print("<label for=buzzer>Buzzer</label>");
-            client.print("<select id=buzzer name=buzzer size=2>");
-            if (cfg.buzzer_enabled) {
-              client.print("<option value=\"true\" selected>Enabled</option>");
-              client.print("<option value=\"false\">Disabled</option>");
-            } else {
-              client.print("<option value=\"true\">Enabled</option>");
-              client.print("<option value=\"false\" selected>Disabled</option>");
-            };
-            client.print("</select>");
-            client.print("<br><br>");
-
-             client.print("<label for=led>LEDs</label>");
-            client.print("<select id=led name=led size=2>");
-            if (cfg.light_enabled) {
-              client.print("<option value=\"true\" selected>Enabled</option>");
-              client.print("<option value=\"false\">Disabled</option>");
-            } else {
-              client.print("<option value=\"true\">Enabled</option>");
-              client.print("<option value=\"false\" selected>Disabled</option>");
-            };
-            client.print("</select>");
-            client.print("<br><br>");
-            
-            client.print("<label for=format>Format</label>");
-            client.print("<select id=format name=format size=2>");
-            if (cfg.mqtt_format == 0) {
-              client.print("<option value=\"0\" selected>JSON</option>");
-              client.print("<option value=\"1\">Influx</option>");
-            } else {
-              client.print("<option value=\"0\">JSON</option>");
-              client.print("<option value=\"1\" selected>Influx</option>");
-            };
-            client.print("</select>");
-
-            // client.print("<div class=\"btnbox\"><button
-            // onclick=\"window.location.href='/selftest'\"
-            // class=\"btn\">Selftest</button></div>"); client.print("<div
-            // class=\"btnbox\"><button
-            // onclick=\"window.location.href='/calibrate'\"
-            // class=\"btn\">Calibration</button></div>");
-            client.print("<input type=submit class=btn value=\"Save and reboot\">");
-            client.print("<br><br>");
-            client.print("Firmware: ");
-            client.println(VERSION);
-            client.print("</form>");
-
-            client.print(ap_root_html_footer);
-            client.println();
-          }
-
-          // Check to see if the client request was "GET /H" or "GET /L":
-          if (currentLine.endsWith(F("POST /save"))) {
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.print(ap_save_html);
-            client.println();
-            reboot = true;
-          }
-        }
-      }
-    }
-    // close the connection:
-    client.stop();
-    Serial.println(F("Client disconnected"));
-  }
 }

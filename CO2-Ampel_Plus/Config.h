@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v2.2.0"
+#define VERSION "v3.0.0"
 
 #define DEBUG_LOG 0 // 1 = Enable debug log
 
@@ -55,7 +55,7 @@
 #define MQTT_FORMAT 0 
 
 //--- Buzzer configuration ---
-#define BUZZER_ENABLED true
+#define BUZZER_ENABLED false
 #define BUZZER_VOLUME 255 / 128 // 1-255
 
 //--- LED configuration ---
@@ -107,8 +107,19 @@
 #define USE_WIFI_NINA false
 #define USE_WIFI101 true
 #define DEBUG_WIFI_WEBSERVER_PORT Serial
-#define _WIFI_LOGLEVEL_ 3
+
+// WIFI_LOGLEVEL below 4 causes EMPTY HTTP RESPONSE
+// see: https://github.com/khoih-prog/WiFiWebServer/issues/3
+#define _WIFI_LOGLEVEL_ 4
 #define _WIFININA_LOGLEVEL_ 3
+
+#define USE_WIFI_NINA         false
+#define USE_WIFI101           true
+#define USE_WIFI_CUSTOM       false
+
+#define BOARD_TYPE      "CO2 Ampel"
+#define BOARD_NAME      
+#define SHIELD_TYPE     "WiFi101 using WiFi101 Library"
 
 #define HTTP_MAX_DATA_WAIT 5000  // ms to wait for the client to send the request
 #define HTTP_MAX_POST_WAIT 5000  // ms to wait for POST data to arrive

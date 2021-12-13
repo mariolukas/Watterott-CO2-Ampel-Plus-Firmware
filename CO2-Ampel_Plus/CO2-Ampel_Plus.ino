@@ -65,6 +65,7 @@ void setup() {
   led_set_color(LED_WHITE);
   led_update();
 
+
   modeButton.begin();
   modeButton.read();
 
