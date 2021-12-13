@@ -1,0 +1,3 @@
+board_manager:
+  additional_urls:
+    - https://github.com/watterott/CO2-Ampel/raw/master/package_co2ampel_index.json
