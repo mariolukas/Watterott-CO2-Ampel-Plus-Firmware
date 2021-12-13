@@ -8,7 +8,7 @@ std::queue<buzzer_state_t> buzzer_state_queue;
 bool mute_requested = false;
 bool muted = false;
 
-uint8_t buzzer_volume = BUZZER_VOLUME;
+uint8_t buzzer_volume = 0;
 
 void buzzer_mute() {
   mute_requested = true;
@@ -26,17 +26,14 @@ uint8_t set_buzzer_off(buzzer_state_t& buzzer_state, uint32_t run_time_ms) {
   return 0;
 }
 
-uint8_t set_buzzer_alternating(buzzer_state_t& buzzer_state,
-                               uint32_t run_time_ms) {
-  if ((run_time_ms / buzzer_state.period_ms) % 2 == 0)
-    return *buzzer_state.volumes.cbegin();
-  else {
-    return *buzzer_state.volumes.cend();
-  }
+uint8_t set_buzzer_pattern(buzzer_state_t& buzzer_state, uint32_t run_time_ms) {
+  auto volume_index =
+      (run_time_ms / buzzer_state.period_ms) % buzzer_state.volumes.size();
+  return buzzer_state.volumes[volume_index];
 }
 
 buzzer_state_t buzzer_default_state = {
-    set_buzzer_off, BUZZER_DEFAULT_PERIOD_MS, 0, std::vector<uint8_t>{0}, 0,
+    set_buzzer_off, BUZZER_DEFAULT_PERIOD_MS, -1, std::vector<uint8_t>{0}, 0,
 };
 
 bool buzzer_queue_done() {
@@ -53,19 +50,6 @@ buzzer_state_t get_buzzer_state() {
 
 void buzzer_queue_flush() {
   std::queue<buzzer_state_t>().swap(buzzer_state_queue);
-}
-
-int8_t buzzer_volume_step(uint8_t target_volume) {
-  float step = float(target_volume - buzzer_volume) * BUZZER_VOLUME_FADE_FACTOR;
-
-  if (step > 0 && step < 1)
-    step = 1;
-  else if (step < 0 && step > -1)
-    step = -1;
-  else
-    step = static_cast<int8_t>(roundl(step));
-
-  return step;
 }
 
 void buzzer();
@@ -99,11 +83,11 @@ void buzzer() {
   }
 
   if ((buzzer_state.run_time_ms == -1) ||
+      (buzzer_state._last_run_time_ms == 0) ||
       (current_state_run_time_ms - buzzer_state._last_run_time_ms >=
        buzzer_state.period_ms)) {
     requested_volume =
         buzzer_state.handler(buzzer_state, current_state_run_time_ms);
-    requested_volume = buzzer_volume + buzzer_volume_step(requested_volume);
     buzzer_state._last_run_time_ms = current_state_run_time_ms;
   }
 
