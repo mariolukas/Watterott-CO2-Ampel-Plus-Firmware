@@ -26,7 +26,9 @@ bool isAuthenticated(){
   if (server.hasHeader(F("Cookie"))){
     String cookie = server.header(F("Cookie"));
     if (cookie.indexOf(F("CO2SESSIONID=1")) != -1){
+#if DEBUG_LOG > 0        
       Serial.println(F("Authentication Successful"));
+#endif
       return true;
     }
   }
@@ -34,7 +36,18 @@ bool isAuthenticated(){
 }
 
 void handleRoot(){  
-  server.send(200, F("text/html"), root_html);
+  server.sendContent(root_header_html);
+  
+  server.sendContent("<style>");
+  server.sendContent(css_styles_general);
+  server.sendContent(css_styles_ampel);
+  server.sendContent("</style>");
+  
+  server.sendContent(root_footer_html);
+  server.sendContent("<script>");
+  server.sendContent(javascript);
+  server.sendContent("</script>");
+
 }
 
 void handleNotFound() {
@@ -153,6 +166,8 @@ void handleSettings(){
   */
 
   server.sendContent(settings_header_html);
+  server.sendContent(css_styles_general);
+  server.sendContent(settings_middle_html);
   
   server.sendContent(F("<label for=mqtt_broker_address>MQTT Broker IP</label>"));
   server.sendContent(F("<input name=mqtt_broker_address placeholder='127.0.0.1' value='"));
@@ -316,14 +331,14 @@ void init_webserver_routes(int wifi_status){
   server.on(F("/styles.css"), handleCSSGeneralFile);
 
   if(wifi_status == WL_CONNECTED){
+      /*
       server.on(F("/ampel.css"), handleCSSAmpelFile);
       server.on(F("/scripts.js"), handleJavaScriptRequest);
-      server.on(F("/sensors.json"), handleJSONResponse);
-      /*
       server.on(F("/settings"), handleSettings);
       server.on(F("/login"), handleLogin);
       server.on(F("/logout"), handleLogout);
       */
+      server.on(F("/sensors.json"), handleJSONResponse);
       server.on(F("/"), handleRoot);
   } else {
       server.on(F("/"), handleSettings);
@@ -354,7 +369,9 @@ void wifi_ap_create() {
   }
 
   if (WiFi.status() == WL_NO_SHIELD) {
+#if DEBUG_LOG > 0       
     Serial.println("WiFi shield not present");
+#endif
     // don't continue
     while (true) {
       led_failure(LED_COLOR_WIFI_FAILURE);
@@ -367,7 +384,9 @@ void wifi_ap_create() {
   sprintf(ap_ssid, "%s %02X:%02X", WIFI_AP_SSID, wifi_mac[4], wifi_mac[5]);
   wifi_status = WiFi.beginAP(ap_ssid, cfg.ap_password);
   if (wifi_status != WL_AP_LISTENING) {
+#if DEBUG_LOG > 0       
     Serial.println("Creating access point failed");
+#endif
     while (true) {
       led_failure(LED_COLOR_WIFI_FAILURE);
     }
@@ -395,7 +414,9 @@ int wifi_wpa_connect() {
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
+#if DEBUG_LOG > 0       
     Serial.println("WiFi shield not present");
+#endif
     // don't continue
     while (true) {
       led_failure(LED_COLOR_WIFI_FAILURE);
@@ -411,6 +432,8 @@ int wifi_wpa_connect() {
   }
 
   if (WiFi.status() != WL_CONNECTED) {
+
+#if DEBUG_LOG > 0       
     if (strlen(cfg.wifi_ssid) == 0) {
       Serial.println("No SSID and Password set. Wifi connection failed");
     } else {
@@ -418,6 +441,8 @@ int wifi_wpa_connect() {
       Serial.print(cfg.wifi_ssid);
       Serial.println(" failed");
     }
+#endif
+
   } else {
     init_webserver_routes(wifi_status);
     print_wifi_status();
@@ -430,6 +455,7 @@ int wifi_wpa_connect() {
 
 void print_wifi_status() {
   // print the SSID of the network you're attached to:
+#if DEBUG_LOG > 0       
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
 
@@ -443,9 +469,11 @@ void print_wifi_status() {
   Serial.print("Signal strength (RSSI): ");
   Serial.print(rssi);
   Serial.println(" dBm");
+#endif
 }
 
 void print_mac_address(byte mac[]) {
+#if DEBUG_LOG > 0       
   for (int i = 5; i >= 0; i--) {
     if (mac[i] < 16) {
       Serial.print("0");
@@ -456,28 +484,30 @@ void print_mac_address(byte mac[]) {
     }
   }
   Serial.println();
+#endif
 }
 
 
 void wifi_handle_client() {
 
-  // compare the previous status to the current status
-  if (wifi_status != WiFi.status()) {
-    // it has changed update the variable
-    wifi_status = WiFi.status();
-
-    if (wifi_status == WL_AP_CONNECTED) {
-      // a device has connected to the AP
-      Serial.println(F("Device connected to AP"));
-    } else {
-      // a device has disconnected from the AP, and we are back in listening
-      // mode
-      Serial.println(F("Device disconnected from AP"));
+  if (!ap_is_active()){
+    // compare the previous status to the current status
+    if (wifi_status != WiFi.status()) {
+      // it has changed update the variable
+      wifi_status = WiFi.status();
+      if (wifi_status == WL_AP_CONNECTED) {
+        // a device has connected to the AP
+        Serial.println(F("Device connected to AP"));
+      } else {
+        // a device has disconnected from the AP, and we are back in listening
+        // mode
+        Serial.println(F("Device disconnected from AP"));
+      }
     }
   }
-
+  
   server.handleClient();
-  delay(15);
+  delay(100);
   
  // WiFiClient client = server.available();  // listen for incoming clients
 

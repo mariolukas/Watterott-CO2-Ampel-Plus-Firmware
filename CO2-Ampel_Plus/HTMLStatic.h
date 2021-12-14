@@ -26,13 +26,20 @@ const char settings_header_html[] PROGMEM = R"=====(
 <head>
 <meta charset="UTF-8">
 <title>CO2 Ampel Wifi Settings</title>
-<link rel="stylesheet" href="styles.css">
+<style>
+)=====";
+
+
+const char settings_middle_html[] PROGMEM = R"=====(
+</style>
 </head>
 <body>
 <div class="box">
  <form class="box" action="/save" method="POST" name="loginForm">
  <h1>Settings</h1>
 )=====";
+ 
+
 
 const char settings_footer_html[] PROGMEM = R"=====(
 </div>
@@ -65,12 +72,13 @@ Password:<input type="password" name="login_password" placeholder="password"><br
 /**
  * Main HTML Page
  */
-const char root_html[] PROGMEM = R"=====(
+const char root_header_html[] PROGMEM = R"=====(
 <head>
 <meta charset="UTF-8">
 <title>CO2 Ampel Wifi AP</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="ampel.css">
+)=====";
+
+const char root_footer_html[] PROGMEM = R"=====(
 </head>
 <div class="box"><h1>CO2 Ampel State</h1>
 <span id="ampel" class="css-ampel %s"><span class="cssampelspan"></span></span>
@@ -79,5 +87,4 @@ const char root_html[] PROGMEM = R"=====(
 <span id="state">Waiting for initial state...</span>
 </div>
 <body></body></html>
-<script type="text/javascript" src="/scripts.js"></script>
 )=====";

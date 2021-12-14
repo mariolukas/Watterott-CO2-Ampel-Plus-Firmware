@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v3.0.0"
+#define VERSION "v3.0.1"
 
 #define DEBUG_LOG 0 // 1 = Enable debug log
 
@@ -103,15 +103,13 @@
 #define WIFI_MODE_NOT_CONECTED 87
 #define WIFI_RECONNECT_ATTEMPTS 10
 
-// Required for WiFiWebServer lib
-#define USE_WIFI_NINA false
-#define USE_WIFI101 true
-#define DEBUG_WIFI_WEBSERVER_PORT Serial
 
 // WIFI_LOGLEVEL below 4 causes EMPTY HTTP RESPONSE
 // see: https://github.com/khoih-prog/WiFiWebServer/issues/3
+
+#define DEBUG_WIFI_WEBSERVER_PORT Serial
 #define _WIFI_LOGLEVEL_ 4
-#define _WIFININA_LOGLEVEL_ 3
+#define _WIFININA_LOGLEVEL_ 0
 
 #define USE_WIFI_NINA         false
 #define USE_WIFI101           true
