@@ -490,24 +490,22 @@ void print_mac_address(byte mac[]) {
 
 void wifi_handle_client() {
 
-  if (!ap_is_active()){
-    // compare the previous status to the current status
-    if (wifi_status != WiFi.status()) {
-      // it has changed update the variable
-      wifi_status = WiFi.status();
-      if (wifi_status == WL_AP_CONNECTED) {
-        // a device has connected to the AP
-        Serial.println(F("Device connected to AP"));
-      } else {
-        // a device has disconnected from the AP, and we are back in listening
-        // mode
-        Serial.println(F("Device disconnected from AP"));
-      }
+
+  // compare the previous status to the current status
+  if (wifi_status != WiFi.status()) {
+    // it has changed update the variable
+    wifi_status = WiFi.status();
+    if (wifi_status == WL_AP_CONNECTED) {
+      // a device has connected to the AP
+      Serial.println(F("Device connected to AP"));
+    } else {
+      // a device has disconnected from the AP, and we are back in listening
+      // mode
+      Serial.println(F("Device disconnected from AP"));
     }
   }
   
   server.handleClient();
-  delay(100);
   
  // WiFiClient client = server.available();  // listen for incoming clients
 
