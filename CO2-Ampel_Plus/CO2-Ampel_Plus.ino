@@ -32,6 +32,7 @@
 #include "MQTTManager.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
+uint8_t button_press_ctr_=0;
 const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
 
@@ -103,6 +104,10 @@ void loop() {
   modeButton.read();
   if (modeButton.pressedFor(3000)) {
     wifi_state = WIFI_MODE_AP_INIT;
+  } else if (modeButton.pressedFor(100)) {
+    button_press_ctr_++;
+  } else {
+    button_press_ctr_ = 0;
   }
 
   switch (wifi_state) {
