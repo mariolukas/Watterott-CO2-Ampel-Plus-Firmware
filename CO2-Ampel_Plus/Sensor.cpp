@@ -55,6 +55,50 @@ void show_data(void)  // Daten anzeigen
   return;
 }
 
+/// References:
+/// - https://www.sensirion.com/en/download-center/carbon-dioxide-sensors-co2/co2-sensor/
+/// - https://cdn.sparkfun.com/assets/4/8/8/7/7/Sensirion_CO2_Sensors_SCD30_Datasheet.pdf
+/// - https://cdn.sparkfun.com/assets/f/e/d/0/1/Sensirion_CO2_Sensors_SCD30_Interface_Description.pdf
+/// - https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library/blob/main/examples/Example4_EnableCalibrate/Example4_EnableCalibrate.ino
+
+/*
+  bool getAutoSelfCalibration(void);
+  bool setAutoSelfCalibration(bool enable);
+  bool getForcedRecalibration(uint16_t *val);
+// Set the forced recalibration factor. See 1.3.7.
+// The reference CO2 concentration has to be within the range 400 ppm ≤ cref(CO2) ≤ 2000 ppm.
+  bool setForcedRecalibrationFactor(uint16_t concentration);
+*/
+
+/* Excerpt from SCD3 Interface Description:
+
+1.4.5 (De-)Activate Automatic Self-Calibration (ASC)
+Continuous automatic self-calibration can be (de-)activated with the following command. When activated for the first time a
+period of minimum 7 days is needed so that the algorithm can find its initial parameter set for ASC. The sensor has to be exposed
+to fresh air for at least 1 hour every day. Also during that period, the sensor may not be disconnected from the power supply,
+otherwise the procedure to find calibration parameters is aborted and has to be restarted from the beginning. The successfully
+calculated parameters are stored in non-volatile memory of the SCD30 having the effect that after a restart the previously found
+parameters for ASC are still present. Note that the most recently found self-calibration parameters will be actively used for self-
+calibration disregarding the status of this feature. Finding a new parameter set by the here described method will always
+overwrite the settings from external recalibration (see chapter 0) and vice-versa. The feature is switched off by default.
+To work properly SCD30 has to see fresh air on a regular basis. Optimal working conditions are given when the sensor sees
+fresh air for one hour every day so that ASC can constantly re-calibrate. ASC only works in continuous measurement mode.
+ASC status is saved in non-volatile memory. When the sensor is powered down while ASC is activated SCD30 will continue with
+automatic self-calibration after repowering without sending the command.
+
+
+Set Forced Recalibration value (FRC)
+Forced recalibration (FRC) is used to compensate for sensor drifts when a reference value of the CO2 concentration in close
+proximity to the SCD30 is available. For best results, the sensor has to be run in a stable environment in continuous mode at a
+measurement rate of 2s for at least two minutes before applying the FRC command and sending the reference value. Setting a
+reference CO2 concentration by the method described here will always supersede corrections from the ASC (see chapter 1.4.5)
+and vice-versa. The reference CO2 concentration has to be within the range 400 ppm ≤ cref(CO2) ≤ 2000 ppm.
+The FRC method imposes a permanent update of the CO2 calibration curve which persists after repowering the sensor. The
+most recently used reference value is retained in volatile memory and can be read out with the command sequence given below.
+After repowering the sensor, the command will return the standard reference value of 400 ppm.
+
+*/
+
 void sensor_calibration() {
 #if DEBUG_LOG > 0
   Serial.println("Start CO2 sensor calibration");

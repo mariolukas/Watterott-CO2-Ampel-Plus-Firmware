@@ -84,6 +84,43 @@ Diese Daten können dann bequem über das oben stehende Projekt mittels Grafana 
 
 Die Ampel kann auf die Standard Werte zurückgesetzt werden, indem man den Mode Taster gedrückt hält, während man über den Reset Taster einmal kurz betätigt. (Alternativ kann man auch die Spannungsversorgung vom Gerät trennen und bei gedrücktem Mode Taster wieder einstecken). Ein kurzes rotes Aufblinken vor dem Normalbetrieb zeigt an, dass die Ampel erfolgreich zurückgesetzt wurde.
 
+### CO2-Sensor Kalibration
+
+Sollte so gut wie nie nötig sein. Im Zweifelsfall unterlassen da der Sensor vorkalibriert ausgeliefert wird. Der Sensor ist jedoch stoßempfindlich, was manchmal trotzallem eine Nachkalibration nötig macht.
+
+Es gibt zwei Möglichkeiten:
+
+1. ASC - Auto-Self-Calibration einschalten.
+2. FRC - Force ReCalibration verwenden, wenn der aktuelle CO2 Wert bekannt ist. (z.b. durch ein genaues CO2-Referenz-messgerät)
+
+Die Empfehlung ist, erst ASC auszuprobieren, bevor FRC genutzt wird, da ASC auf der genaueren Fabrikskalibration aufbaut, während FRC diese überschreibt.
+
+#### Auto-Self-Calibration einschalten
+
+Für ASC muss der Sensor über einen Zeitraum von mindestens 7 Tagen regelmäßig für eine gewisse Zeit mit Frischluft in Kontakt kommen. Empfohlen ist 1 Stunde pro Tag für mindestens 7 Tage.
+
+Wird in dieser Zeit die Stromversorgung unterbrochen, startet die Kalbrierung von vorne und es werden erneut mindestens 7 Tage benötigt.
+
+Bis eine ASC Kalibrierung abgeschlossen ist, werden die Kalibrierungswerte der letzten ASC verwendet.
+
+Um ASC Einzuschalten, drücke den MODE-Taster 3x bis die dritte LED leuchtet. Als Bestätigung blinken die 3 LEDS 3 mal.
+
+Um ASC Auszuschalten, drücke den MODE-Taster 2x bis die zweite LED leuchtet. Zur Bestätigung blinken die 2 LEDS 2 mal.
+
+ASC kann auch via MQTT eingeschalten werden.
+
+Dafür zuerst den MODE-Taster 1x drücken. Nun ist es für 1h möglich, die Kalibration zu konfigurieren.
+
+TODO MQTT Command
+
+
+#### Force ReCalibration durchführen.
+
+1. Das CO2-Referenzgerät (notfalls einen zweiten SC30) neben den Sensor stellen.
+2. Warten bis die CO2 Werte für zumindest 3 Minuten stabil sind. Atmen und Bewegung im Raum sind nicht hilfreich. Ein abgeschlossener Behälter für beide Geräte schon.
+3. MODE-Taster 4x drücken, bis die vierte LED leuchtet.
+4. CO2-Wert des Referenzgerätes ablesen. Gesetzt werden können nur Referenzwerte zwischen 400 und 2000 ppm.
+5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: 'TODO TOPIC'. **Achtung**: überschreibt Fabrikskalibration.
 
 ## Neue Ampel Firmware Version installieren
 Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an.
