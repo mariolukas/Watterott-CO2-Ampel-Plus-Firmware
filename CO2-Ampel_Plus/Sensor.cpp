@@ -294,9 +294,8 @@ void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_c
   //as a precaution, ensure measured value remains stable for 2minutes!!
   //also ensure, forced calibration is not more than 400ppm off from measured value
 
-  unsigned int okay = 0, co2_last = 0;
+  unsigned int okay = 0, co2_last = co2, co2_first = co2;
 
-  co2_last = co2;
   for (okay = 0; okay < 60;)
   {  // mindestens 60 Messungen (ca. 2 Minuten)
 
@@ -309,7 +308,8 @@ void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_c
       temp = co2_sensor.getTemperature();
       humi = co2_sensor.getHumidity();
 
-      if ( (co2 > (co2_last - 30)) && (co2 < (co2_last + 30)) )  //+/-30ppm Toleranz zum vorherigen Wert
+      if ((co2 > co2_first - 90) && (co2 < co2_first + 90) && (co2 > (co2_last - 30)) &&
+          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
       {
         okay++;
       } else {
