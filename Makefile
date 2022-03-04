@@ -19,7 +19,7 @@ endif
 
 .PHONY: all example program clean
 
-all: prepare build
+all: clean prepare build
 
 prepare:
 	$(ARDUINO_CLI) --config-file $(CONFIG_FILE) core install co2ampel:samd
