@@ -309,8 +309,7 @@ void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_c
       temp = co2_sensor.getTemperature();
       humi = co2_sensor.getHumidity();
 
-      if ((co2 > externally_accurately_measured_co2_value - 400) && (co2 < externally_accurately_measured_co2_value + 400) && (co2 > (co2_last - 30)) &&
-          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
+      if ( (co2 > (co2_last - 30)) && (co2 < (co2_last + 30)) )  //+/-30ppm Toleranz zum vorherigen Wert
       {
         okay++;
       } else {
