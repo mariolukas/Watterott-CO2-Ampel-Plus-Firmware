@@ -23,6 +23,7 @@ unsigned int light = 1024;
 float temp = 0, humi = 0;
 static long long t_light = 0;
 static int dunkel = 0;
+bool sensor_frc_allowed_ = false;
 
 void show_data(void)  // Daten anzeigen
 {
@@ -98,66 +99,6 @@ most recently used reference value is retained in volatile memory and can be rea
 After repowering the sensor, the command will return the standard reference value of 400 ppm.
 
 */
-
-void sensor_calibration() {
-#if DEBUG_LOG > 0
-  Serial.println("Start CO2 sensor calibration");
-#endif
-  unsigned int okay = 0, co2_last = 0;
-  // led_test();
-
-  co2_last = co2;
-  for (okay = 0; okay < 60;) {  // mindestens 60 Messungen (ca. 2 Minuten)
-
-    led_one_by_one(LED_YELLOW, 100);
-    led_update();
-
-    if (co2_sensor.dataAvailable())  // alle 2s
-    {
-      co2 = co2_sensor.getCO2();
-      temp = co2_sensor.getTemperature();
-      humi = co2_sensor.getHumidity();
-
-      if ((co2 > 200) && (co2 < 600) && (co2 > (co2_last - 30)) &&
-          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
-      {
-        okay++;
-      } else {
-        okay = 0;
-      }
-
-      co2_last = co2;
-
-      if (co2 < 500) {
-        led_set_color(LED_GREEN);
-      } else if (co2 < 600) {
-        led_set_color(LED_YELLOW);
-      } else { // >=600
-        led_set_color(LED_RED);
-      }
-      led_update();
-
-#if SERIAL_OUTPUT > 0
-      Serial.print("ok: ");
-      Serial.println(okay);
-#endif
-
-      show_data();
-    }
-
-    if (okay >= 60) {
-      co2_sensor.setForcedRecalibrationFactor(400);  // 400ppm = Frischluft
-      led_off();
-      led_tick = 0;
-      delay(50);
-      led_set_color(LED_GREEN);
-      delay(100);
-      led_off();
-      led_update();
-      buzzer_ack();
-    }
-  }
-}
 
 unsigned int light_sensor(void)  // Auslesen des Lichtsensors
 {
@@ -290,4 +231,83 @@ void sensor_handle_brightness() {
       led_adjust_brightness(255);  // 0...255
     }
   }
+}
+
+bool sensor_get_co2_autocalibration()
+{
+  return co2_sensor.getAutoSelfCalibration();
+}
+
+//switch on or off autocalibration for duration that we are powered (default is OFF)
+void sensor_set_co2_autocalibration(bool enable)
+{
+  co2_sensor.setAutoSelfCalibration(enable);
+}
+
+void sensor_allow_co2_force_recalibration(bool allow)
+{
+  sensor_frc_allowed_ = allow;
+}
+
+
+// eg: use 400ppm = Frischluft
+void sensor_do_co2_force_recalibration(uint32_t current_accurately_measured_co2_value)
+{
+  if (current_accurately_measured_co2_value < 400 || current_accurately_measured_co2_value > 2000)
+  {
+    return;
+  }
+  if (false == sensor_frc_allowed_)
+  {
+    return;
+  }
+
+  //as a precaution, ensure measured value remains stable for 2minutes!!
+  //also ensure, forced calibration is not more than 400ppm off from measured value
+
+  unsigned int okay = 0, co2_last = 0;
+
+  co2_last = co2;
+  for (okay = 0; okay < 60;)
+  {  // mindestens 60 Messungen (ca. 2 Minuten)
+
+    led_one_by_one(LED_YELLOW, 100);
+    led_update();
+
+    if (co2_sensor.dataAvailable())  // alle 2s
+    {
+      co2 = co2_sensor.getCO2();
+      temp = co2_sensor.getTemperature();
+      humi = co2_sensor.getHumidity();
+
+      if ((co2 > current_accurately_measured_co2_value - 400) && (co2 < current_accurately_measured_co2_value + 400) && (co2 > (co2_last - 30)) &&
+          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
+      {
+        okay++;
+      } else {
+        okay = 0;
+#if SERIAL_OUTPUT > 0
+        Serial.println("FAIL: co2 measurement not stable");
+#endif
+        led_blink(LED_RED,400);
+        led_blink(LED_RED,400);
+        return; // ABORT
+      }
+
+      co2_last = co2;
+      show_data();
+    }
+  }
+
+  //done: co2 reference value has remained stable
+  led_set_color(LED_GREEN);
+
+#if SERIAL_OUTPUT > 0
+  Serial.println("ok, values remained stable");
+#endif
+
+  co2_sensor.setForcedRecalibrationFactor(current_accurately_measured_co2_value);
+  buzzer_ack();
+  led_blink(LED_GREEN,900);
+  led_blink(LED_GREEN,900);
 }

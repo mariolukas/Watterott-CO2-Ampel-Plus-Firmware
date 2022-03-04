@@ -163,4 +163,32 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
     config_set_values(cfg);
   }
+  if (doc.containsKey("buzzer_enabled")) {
+    String buzzer_enabled = doc["buzzer_enabled"];
+    if (buzzer_enabled.equalsIgnoreCase(F("true"))) {
+      Serial.println("Buzzer enabled via MQTT");
+      cfg.buzzer_enabled = true;
+    } else if (buzzer_enabled.equalsIgnoreCase(F("false"))) {
+      Serial.println("Buzzer disabled via MQTT");
+      cfg.buzzer_enabled = false;
+    }
+    config_set_values(cfg);
+  }
+  if (doc.containsKey("asc_enabled")) {
+    String asc_enabled = doc["asc_enabled"];
+    if (asc_enabled.equalsIgnoreCase(F("true"))) {
+      Serial.println("AutoSelfCalibration enabled via MQTT");
+      sensor_set_co2_autocalibration(true);
+    } else if (asc_enabled.equalsIgnoreCase(F("false"))) {
+      Serial.println("AutoSelfCalibration disabled via MQTT");
+      sensor_set_co2_autocalibration(false);
+    }
+  }
+  if (doc.containsKey("force_recalibrate_co2")) {
+    long int frc_co2_value = doc["force_recalibrate_co2"].as<long>();
+    if (frc_co2_value >= 400 && frc_co2_value <= 2000) {
+      Serial.println("CO2 ForceRecalibration requested");
+      sensor_do_co2_force_recalibration(frc_co2_value);
+    }
+  }
 }

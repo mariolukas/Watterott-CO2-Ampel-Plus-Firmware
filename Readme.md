@@ -111,7 +111,7 @@ ASC kann auch via MQTT eingeschalten werden.
 
 Dafür zuerst den MODE-Taster 1x drücken. Nun ist es für 1h möglich, die Kalibration zu konfigurieren.
 
-TODO MQTT Command
+Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}`
 
 
 #### Force ReCalibration durchführen.
@@ -120,7 +120,9 @@ TODO MQTT Command
 2. Warten bis die CO2 Werte für zumindest 3 Minuten stabil sind. Atmen und Bewegung im Raum sind nicht hilfreich. Ein abgeschlossener Behälter für beide Geräte schon.
 3. MODE-Taster 4x drücken, bis die vierte LED leuchtet.
 4. CO2-Wert des Referenzgerätes ablesen. Gesetzt werden können nur Referenzwerte zwischen 400 und 2000 ppm.
-5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: 'TODO TOPIC'. **Achtung**: überschreibt Fabrikskalibration.
+5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: `{"force_recalibrate_co2": <integer-ppm-wert>}`. **Achtung**: überschreibt Fabrikskalibration.
+
+Die wirklich Verzweifelten, welche auf Messgenauigkeit keinen so honen Wert legen, können den Sensor für 2min mit Akkupack an die frische Luft in WLAN Nähe legen, und dann den Sensor auf 400ppm (Frischluft) zwangskalibrieren.
 
 ## Neue Ampel Firmware Version installieren
 Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an.
