@@ -317,8 +317,10 @@ void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_c
 #if SERIAL_OUTPUT > 0
         Serial.println("FAIL: co2 measurement not stable");
 #endif
-        led_blink(LED_RED,400);
-        led_blink(LED_RED,400);
+        led_blink(LED_RED,300);
+        led_blink(LED_VIOLET,300);
+        led_blink(LED_RED,300);
+        led_blink(LED_VIOLET,300);
         return; // ABORT
       }
 
