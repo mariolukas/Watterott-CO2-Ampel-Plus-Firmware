@@ -103,9 +103,9 @@ Wird in dieser Zeit die Stromversorgung unterbrochen, startet die Kalbrierung vo
 
 Bis eine ASC Kalibrierung abgeschlossen ist, werden die Kalibrierungswerte der letzten ASC verwendet.
 
-Um ASC Einzuschalten, drücke den MODE-Taster 3x bis die dritte LED leuchtet. Als Bestätigung blinken die 3 LEDS 3 mal.
+Um ASC Einzuschalten, drücke den MODE-Taster 3x bis die dritte LED Gelb leuchtet. Als Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Hellgrün.
 
-Um ASC Auszuschalten, drücke den MODE-Taster 2x bis die zweite LED leuchtet. Zur Bestätigung blinken die 2 LEDS 2 mal.
+Um ASC Auszuschalten, drücke den MODE-Taster 2x bis die zweite LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Dunkelgrün.
 
 ASC kann auch via MQTT eingeschalten werden.
 
@@ -118,7 +118,7 @@ Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}`
 
 1. Das CO2-Referenzgerät (notfalls einen zweiten SC30) neben den Sensor stellen.
 2. Warten bis die CO2 Werte für zumindest 3 Minuten stabil sind. Atmen und Bewegung im Raum sind nicht hilfreich. Ein abgeschlossener Behälter für beide Geräte schon.
-3. MODE-Taster 4x drücken, bis die vierte LED leuchtet.
+3. MODE-Taster 4x drücken, bis die vierte LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Gelb.
 4. CO2-Wert des Referenzgerätes ablesen. Gesetzt werden können nur Referenzwerte zwischen 400 und 2000 ppm.
 5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: `{"force_recalibrate_co2": <integer-ppm-wert>}`. **Achtung**: überschreibt Fabrikskalibration.
 

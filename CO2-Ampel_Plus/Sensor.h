@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include "MQTTManager.h"
 
-void sensor_handler();
+void sensor_handler(bool visualize_via_leds);
 void sensor_init();
 void sensor_handle_brightness();
 void sensor_set_temperature_offset(float offset);

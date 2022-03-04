@@ -23,7 +23,7 @@ unsigned int light = 1024;
 float temp = 0, humi = 0;
 static long long t_light = 0;
 static int dunkel = 0;
-bool sensor_frc_allowed_ = false;
+uint8_t sensor_frc_allowed_timeout_ = 0;
 
 void show_data(void)  // Daten anzeigen
 {
@@ -165,7 +165,7 @@ void sensor_set_temperature_offset(float offset) {
 #endif
 }
 
-void sensor_handler() {
+void sensor_handler(bool visualize_via_leds) {
   unsigned int ampel = 0;
   co2_average = (co2_average + co2) / 2;  // Berechnung jede Sekunde
 
@@ -187,18 +187,26 @@ void sensor_handler() {
     show_data();
   }
 
-  // Ampel
-  if (ampel < START_YELLOW) {
-    led_set_color(LED_GREEN);
-  } else if (ampel < START_RED) {
-    led_set_color(LED_YELLOW);
-  } else if (ampel < START_RED_BLINK) {
-    led_set_color(LED_RED);
-  } else {  // rot blinken
-    led_blink(LED_RED, 500);
+  if (visualize_via_leds) {
+    // Ampel
+    if (ampel < START_YELLOW) {
+      led_set_color(LED_GREEN);
+    } else if (ampel < START_RED) {
+      led_set_color(LED_YELLOW);
+    } else if (ampel < START_RED_BLINK) {
+      led_set_color(LED_RED);
+    } else {  // rot blinken
+      led_blink(LED_RED, 500);
+    }
+
+    led_update();  // zeige Farbe
   }
 
-  led_update();  // zeige Farbe
+  //update timeout
+  if (sensor_frc_allowed_timeout_ > 0) {
+    sensor_frc_allowed_timeout_--;
+  }
+
 }
 
 float get_temperature() {
@@ -242,11 +250,23 @@ bool sensor_get_co2_autocalibration()
 void sensor_set_co2_autocalibration(bool enable)
 {
   co2_sensor.setAutoSelfCalibration(enable);
+#if SERIAL_OUTPUT > 0
+  Serial.print("CO2 AutoCalibration: ");
+  Serial.println(enable);
+#endif
 }
 
 void sensor_allow_co2_force_recalibration(bool allow)
 {
-  sensor_frc_allowed_ = allow;
+  if (allow)
+  {
+    sensor_frc_allowed_timeout_ = 60; //60*2s = 2min
+#if SERIAL_OUTPUT > 0
+    Serial.println("CO2 ForceReCalibration now allowed for 2min via MQTT");
+#endif
+  }
+  else
+    sensor_frc_allowed_timeout_ = 0;
 }
 
 
@@ -257,10 +277,12 @@ void sensor_do_co2_force_recalibration(uint32_t current_accurately_measured_co2_
   {
     return;
   }
-  if (false == sensor_frc_allowed_)
+  if (0 == sensor_frc_allowed_timeout_)
   {
     return;
   }
+
+  sensor_allow_co2_force_recalibration(false); //reset timeout
 
   //as a precaution, ensure measured value remains stable for 2minutes!!
   //also ensure, forced calibration is not more than 400ppm off from measured value
