@@ -111,7 +111,7 @@ ASC kann auch via MQTT eingeschalten werden.
 
 Dafür zuerst den MODE-Taster 1x drücken. Nun ist es für 1h möglich, die Kalibration zu konfigurieren.
 
-Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}`
+Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}` an e.g. topic `sensors/CO2Ampel/set`
 
 
 #### Force ReCalibration durchführen.
