@@ -133,6 +133,7 @@ void loop() {
   modeButton.read();
   if (modeButton.pressedFor(3000)) {
     wifi_state = WIFI_MODE_AP_INIT;
+    button_press_ctr_ = 0;
   } else if (button_press_ctr_ > 0 && modeButton.releasedFor(1900)) {
     handle_button_action(button_press_ctr_);
     button_press_ctr_ = 0;
