@@ -176,7 +176,7 @@ void sensor_handler(bool visualize_via_leds) {
 #endif
 
   // neue Sensordaten auslesen
-  if (co2_sensor.dataAvailable()) {
+  if (co2_sensor.dataAvailable()) { //every 2s
     co2 = co2_sensor.getCO2();
     temp = co2_sensor.getTemperature();
     humi = co2_sensor.getHumidity();
@@ -185,6 +185,11 @@ void sensor_handler(bool visualize_via_leds) {
     }
 
     show_data();
+
+    //update timeout
+    if (sensor_frc_allowed_timeout_ > 0) {
+      sensor_frc_allowed_timeout_--;
+    }
   }
 
   if (visualize_via_leds) {
@@ -200,11 +205,6 @@ void sensor_handler(bool visualize_via_leds) {
     }
 
     led_update();  // zeige Farbe
-  }
-
-  //update timeout
-  if (sensor_frc_allowed_timeout_ > 0) {
-    sensor_frc_allowed_timeout_--;
   }
 
 }
