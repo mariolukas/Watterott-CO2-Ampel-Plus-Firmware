@@ -271,18 +271,25 @@ void sensor_allow_co2_force_recalibration(bool allow)
 
 
 // eg: use 400ppm = Frischluft
-void sensor_do_co2_force_recalibration(uint32_t current_accurately_measured_co2_value)
+void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_co2_value)
 {
-  if (current_accurately_measured_co2_value < 400 || current_accurately_measured_co2_value > 2000)
+  if (externally_accurately_measured_co2_value < 400 || externally_accurately_measured_co2_value > 2000)
   {
     return;
   }
   if (0 == sensor_frc_allowed_timeout_)
   {
+#if SERIAL_OUTPUT > 0
+    Serial.println("CO2 Sensor ForceReCalibration current not allowed");
+#endif
     return;
   }
 
   sensor_allow_co2_force_recalibration(false); //reset timeout
+
+#if SERIAL_OUTPUT > 0
+  Serial.println("CO2 Sensor ForceReCalibration started");
+#endif
 
   //as a precaution, ensure measured value remains stable for 2minutes!!
   //also ensure, forced calibration is not more than 400ppm off from measured value
@@ -302,7 +309,7 @@ void sensor_do_co2_force_recalibration(uint32_t current_accurately_measured_co2_
       temp = co2_sensor.getTemperature();
       humi = co2_sensor.getHumidity();
 
-      if ((co2 > current_accurately_measured_co2_value - 400) && (co2 < current_accurately_measured_co2_value + 400) && (co2 > (co2_last - 30)) &&
+      if ((co2 > externally_accurately_measured_co2_value - 400) && (co2 < externally_accurately_measured_co2_value + 400) && (co2 > (co2_last - 30)) &&
           (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
       {
         okay++;
@@ -328,7 +335,10 @@ void sensor_do_co2_force_recalibration(uint32_t current_accurately_measured_co2_
   Serial.println("ok, values remained stable");
 #endif
 
-  co2_sensor.setForcedRecalibrationFactor(current_accurately_measured_co2_value);
+  co2_sensor.setForcedRecalibrationFactor(externally_accurately_measured_co2_value);
+#if SERIAL_OUTPUT > 0
+  Serial.println("CO2 Sensor ForceReCalibration finished");
+#endif
   buzzer_ack();
   led_blink(LED_GREEN,900);
   led_blink(LED_GREEN,900);
