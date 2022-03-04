@@ -163,17 +163,6 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
     config_set_values(cfg);
   }
-  if (doc.containsKey("buzzer_enabled")) {
-    String buzzer_enabled = doc["buzzer_enabled"];
-    if (buzzer_enabled.equalsIgnoreCase(F("true"))) {
-      Serial.println("Buzzer enabled via MQTT");
-      cfg.buzzer_enabled = true;
-    } else if (buzzer_enabled.equalsIgnoreCase(F("false"))) {
-      Serial.println("Buzzer disabled via MQTT");
-      cfg.buzzer_enabled = false;
-    }
-    config_set_values(cfg);
-  }
   if (doc.containsKey("asc_enabled")) {
     String asc_enabled = doc["asc_enabled"];
     if (asc_enabled.equalsIgnoreCase(F("true"))) {
