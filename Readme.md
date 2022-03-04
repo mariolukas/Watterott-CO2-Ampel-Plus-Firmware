@@ -121,8 +121,9 @@ Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}` an e.g. to
 3. MODE-Taster 4x drücken, bis die vierte LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Gelb.
 4. CO2-Wert des Referenzgerätes ablesen. Gesetzt werden können nur Referenzwerte zwischen 400 und 2000 ppm.
 5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: `{"force_recalibrate_co2": <integer-ppm-wert>}`. **Achtung**: überschreibt Fabrikskalibration.
+6. Der Sensor prüft nun für 2 Minuten ob der aktuelle CO2-Wert stabil bleibt. Dann wird die neue Messreferenz im Sensor fix abgespeichert.
 
-Die wirklich Verzweifelten, welche auf Messgenauigkeit keinen so honen Wert legen, können den Sensor für 2min mit Akkupack an die frische Luft in WLAN Nähe legen, und dann den Sensor auf 400ppm (Frischluft) zwangskalibrieren.
+Die wirklich Verzweifelten, welche auf Messgenauigkeit keinen so hohen Wert legen, können den Sensor für 2min mit Akkupack an die frische Luft in WLAN Nähe legen, und dann den Sensor auf 400ppm (Frischluft) zwangskalibrieren.
 
 ## Neue Ampel Firmware Version installieren
 Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an.
