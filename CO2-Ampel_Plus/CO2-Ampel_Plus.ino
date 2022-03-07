@@ -105,6 +105,17 @@ void handle_button_action(uint8_t action) {
   delay(700);
   switch(action) {
     case 1:
+      if (config_is_initialized()) {
+        device_config_t cfg = config_get_values();
+        cfg.buzzer_enabled = !cfg.buzzer_enabled;
+        config_set_values(cfg);
+        if (cfg.buzzer_enabled)
+        {
+          buzzer_ack(); //if  on: beep twice
+          delay(200);   //if off: beep once
+        }
+        buzzer_ack();
+      }
       break;
     case 2:
       sensor_set_co2_autocalibration(false);

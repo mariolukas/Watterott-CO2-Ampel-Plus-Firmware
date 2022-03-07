@@ -47,6 +47,18 @@ Die Ampel verfügt über zwei Tasten. Die von der USB Buchse aus links gelegene 
 
 ![Co2 Ampel Pro Tastenbelegung](docs/images/Tastenbelegung.png)
 
+Prinzipiell gibt es folgende Tastenkombinationen:
+
+- Reset 1x drücken: Reboot
+- Reset 2x drücken: Boot into USB-Storage flash mode
+- Reset drücken während Mode gehalten wird: Factory Reset
+- Mode lange halten: AP Konfigurationsmodus starten
+- Mode 1x drücken: Buzzer toggeln
+- Mode 2x drücken: Self-Calibration ausschalten
+- Mode 3x drücken: Self-Calibration einschalten
+- Mode 4x drücken: Force-Re-Calibration ermöglichen
+
+
 ### Startvorgang und Normalmodus
 Nachdem Einschalten leuchtet die Ampel zunächst weiß. Zu diesem Zeitpunkt wird unter anderem der CO2 Sensor initialisiert.
 Sobald die LEDs von weiß auf Grün, Gelb, Rot oder Rot blinken wechseln, befindet sich die Ampel im Normalbetrieb und zeigt den aktuellen CO2 Status an.
@@ -83,6 +95,14 @@ Diese Daten können dann bequem über das oben stehende Projekt mittels Grafana 
 ### Auf Werkseinstellungen zurücksetzen
 
 Die Ampel kann auf die Standard Werte zurückgesetzt werden, indem man den Mode Taster gedrückt hält, während man über den Reset Taster einmal kurz betätigt. (Alternativ kann man auch die Spannungsversorgung vom Gerät trennen und bei gedrücktem Mode Taster wieder einstecken). Ein kurzes rotes Aufblinken vor dem Normalbetrieb zeigt an, dass die Ampel erfolgreich zurückgesetzt wurde.
+
+### Buzzer toggeln
+
+Mit einem einfachen Druck des Mode-Taster wird der Buzzer ein bzw ausgeschalten. Nach dem Druck ertönt kurz der Buzzer, dann wechselt die eizeln gelb leuchtende LED zur Bestätigung auf violett. 
+
+Ist der Buzzer danach aus, ertönt noch einmal der Buzzer (insgesammt also 2x).
+
+Ist de Buzzer danach ein, ertönt noch zweimal der Buzzer (insgesammt also 3x).
 
 ### CO2-Sensor Kalibration
 
