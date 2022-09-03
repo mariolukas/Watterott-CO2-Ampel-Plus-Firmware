@@ -154,7 +154,6 @@ void sensor_init() {
   // co2_sensor.setForcedRecalibrationFactor(1135);
   co2_sensor.setMeasurementInterval(INTERVAL);  // setze Messinterval
   delay(INTERVAL * 1000);                       // Intervallsekunden warten
-  co2_sensor.setTemperatureOffset(TEMPERATURE_OFFSET);
 }
 
 void sensor_set_temperature_offset(float offset) {
