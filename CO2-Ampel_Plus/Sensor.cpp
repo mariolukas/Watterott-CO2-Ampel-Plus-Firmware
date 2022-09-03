@@ -164,6 +164,13 @@ void sensor_set_temperature_offset(float offset) {
 #endif
 }
 
+float sensor_set_relative_temperature_offset(float relative_offset) {
+  float offset = co2_sensor.getTemperatureOffset();
+  offset += relative_offset;
+  sensor_set_temperature_offset(offset);
+  return offset;
+}
+
 void sensor_handler(bool visualize_via_leds) {
   unsigned int ampel = 0;
   co2_average = (co2_average + co2) / 2;  // Berechnung jede Sekunde

@@ -163,6 +163,17 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
     config_set_values(cfg);
   }
+  if (doc.containsKey("temperature_calibrate_set_current_roomtemp")) {
+    float true_room_temperature = doc["temperature_calibrate_set_current_roomtemp"].as<float>();
+    float measured_temp = get_temperature();
+    float temp_relative_offset = true_room_temperature - measured_temp;
+    if (true_room_temperature != 0 && (temp_relative_offset > 0.01 || temp_relative_offset < 0.01) && temp_relative_offset < 40.0 && temp_relative_offset > -40.0)
+    {
+      float new_absolute_temperature_offset = sensor_set_relative_temperature_offset(temp_relative_offset);
+      cfg.temperature_offset = new_absolute_temperature_offset;
+      config_set_values(cfg);
+    }
+  }
   if (doc.containsKey("asc_enabled")) {
     String asc_enabled = doc["asc_enabled"];
     if (asc_enabled.equalsIgnoreCase(F("true"))) {
