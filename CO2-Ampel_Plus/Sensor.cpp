@@ -23,6 +23,7 @@ unsigned int light = 1024;
 float temp = 0, humi = 0;
 static long long t_light = 0;
 static int dunkel = 0;
+uint8_t sensor_frc_allowed_timeout_ = 0;
 
 void show_data(void)  // Daten anzeigen
 {
@@ -55,65 +56,49 @@ void show_data(void)  // Daten anzeigen
   return;
 }
 
-void sensor_calibration() {
-#if DEBUG_LOG > 0
-  Serial.println("Start CO2 sensor calibration");
-#endif
-  unsigned int okay = 0, co2_last = 0;
-  // led_test();
+/// References:
+/// - https://www.sensirion.com/en/download-center/carbon-dioxide-sensors-co2/co2-sensor/
+/// - https://cdn.sparkfun.com/assets/4/8/8/7/7/Sensirion_CO2_Sensors_SCD30_Datasheet.pdf
+/// - https://cdn.sparkfun.com/assets/f/e/d/0/1/Sensirion_CO2_Sensors_SCD30_Interface_Description.pdf
+/// - https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library/blob/main/examples/Example4_EnableCalibrate/Example4_EnableCalibrate.ino
 
-  co2_last = co2;
-  for (okay = 0; okay < 60;) {  // mindestens 60 Messungen (ca. 2 Minuten)
+/*
+  bool getAutoSelfCalibration(void);
+  bool setAutoSelfCalibration(bool enable);
+  bool getForcedRecalibration(uint16_t *val);
+// Set the forced recalibration factor. See 1.3.7.
+// The reference CO2 concentration has to be within the range 400 ppm ≤ cref(CO2) ≤ 2000 ppm.
+  bool setForcedRecalibrationFactor(uint16_t concentration);
+*/
 
-    led_one_by_one(LED_YELLOW, 100);
-    led_update();
+/* Excerpt from SCD3 Interface Description:
 
-    if (co2_sensor.dataAvailable())  // alle 2s
-    {
-      co2 = co2_sensor.getCO2();
-      temp = co2_sensor.getTemperature();
-      humi = co2_sensor.getHumidity();
+1.4.5 (De-)Activate Automatic Self-Calibration (ASC)
+Continuous automatic self-calibration can be (de-)activated with the following command. When activated for the first time a
+period of minimum 7 days is needed so that the algorithm can find its initial parameter set for ASC. The sensor has to be exposed
+to fresh air for at least 1 hour every day. Also during that period, the sensor may not be disconnected from the power supply,
+otherwise the procedure to find calibration parameters is aborted and has to be restarted from the beginning. The successfully
+calculated parameters are stored in non-volatile memory of the SCD30 having the effect that after a restart the previously found
+parameters for ASC are still present. Note that the most recently found self-calibration parameters will be actively used for self-
+calibration disregarding the status of this feature. Finding a new parameter set by the here described method will always
+overwrite the settings from external recalibration (see chapter 0) and vice-versa. The feature is switched off by default.
+To work properly SCD30 has to see fresh air on a regular basis. Optimal working conditions are given when the sensor sees
+fresh air for one hour every day so that ASC can constantly re-calibrate. ASC only works in continuous measurement mode.
+ASC status is saved in non-volatile memory. When the sensor is powered down while ASC is activated SCD30 will continue with
+automatic self-calibration after repowering without sending the command.
 
-      if ((co2 > 200) && (co2 < 600) && (co2 > (co2_last - 30)) &&
-          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
-      {
-        okay++;
-      } else {
-        okay = 0;
-      }
 
-      co2_last = co2;
+Set Forced Recalibration value (FRC)
+Forced recalibration (FRC) is used to compensate for sensor drifts when a reference value of the CO2 concentration in close
+proximity to the SCD30 is available. For best results, the sensor has to be run in a stable environment in continuous mode at a
+measurement rate of 2s for at least two minutes before applying the FRC command and sending the reference value. Setting a
+reference CO2 concentration by the method described here will always supersede corrections from the ASC (see chapter 1.4.5)
+and vice-versa. The reference CO2 concentration has to be within the range 400 ppm ≤ cref(CO2) ≤ 2000 ppm.
+The FRC method imposes a permanent update of the CO2 calibration curve which persists after repowering the sensor. The
+most recently used reference value is retained in volatile memory and can be read out with the command sequence given below.
+After repowering the sensor, the command will return the standard reference value of 400 ppm.
 
-      if (co2 < 500) {
-        led_set_color(LED_GREEN);
-      } else if (co2 < 600) {
-        led_set_color(LED_YELLOW);
-      } else { // >=600
-        led_set_color(LED_RED);
-      }
-      led_update();
-
-#if SERIAL_OUTPUT > 0
-      Serial.print("ok: ");
-      Serial.println(okay);
-#endif
-
-      show_data();
-    }
-
-    if (okay >= 60) {
-      co2_sensor.setForcedRecalibrationFactor(400);  // 400ppm = Frischluft
-      led_off();
-      led_tick = 0;
-      delay(50);
-      led_set_color(LED_GREEN);
-      delay(100);
-      led_off();
-      led_update();
-      buzzer_ack();
-    }
-  }
-}
+*/
 
 unsigned int light_sensor(void)  // Auslesen des Lichtsensors
 {
@@ -169,7 +154,6 @@ void sensor_init() {
   // co2_sensor.setForcedRecalibrationFactor(1135);
   co2_sensor.setMeasurementInterval(INTERVAL);  // setze Messinterval
   delay(INTERVAL * 1000);                       // Intervallsekunden warten
-  co2_sensor.setTemperatureOffset(TEMPERATURE_OFFSET);
 }
 
 void sensor_set_temperature_offset(float offset) {
@@ -180,7 +164,14 @@ void sensor_set_temperature_offset(float offset) {
 #endif
 }
 
-void sensor_handler() {
+float sensor_set_relative_temperature_offset(float relative_offset) {
+  float offset = co2_sensor.getTemperatureOffset();
+  offset += relative_offset;
+  sensor_set_temperature_offset(offset);
+  return offset;
+}
+
+void sensor_handler(bool visualize_via_leds) {
   unsigned int ampel = 0;
   co2_average = (co2_average + co2) / 2;  // Berechnung jede Sekunde
 
@@ -191,7 +182,7 @@ void sensor_handler() {
 #endif
 
   // neue Sensordaten auslesen
-  if (co2_sensor.dataAvailable()) {
+  if (co2_sensor.dataAvailable()) { //every 2s
     co2 = co2_sensor.getCO2();
     temp = co2_sensor.getTemperature();
     humi = co2_sensor.getHumidity();
@@ -200,20 +191,28 @@ void sensor_handler() {
     }
 
     show_data();
+
+    //update timeout
+    if (sensor_frc_allowed_timeout_ > 0) {
+      sensor_frc_allowed_timeout_--;
+    }
   }
 
-  // Ampel
-  if (ampel < START_YELLOW) {
-    led_set_color(LED_GREEN);
-  } else if (ampel < START_RED) {
-    led_set_color(LED_YELLOW);
-  } else if (ampel < START_RED_BLINK) {
-    led_set_color(LED_RED);
-  } else {  // rot blinken
-    led_blink(LED_RED, 500);
+  if (visualize_via_leds) {
+    // Ampel
+    if (ampel < START_YELLOW) {
+      led_set_color(LED_GREEN);
+    } else if (ampel < START_RED) {
+      led_set_color(LED_YELLOW);
+    } else if (ampel < START_RED_BLINK) {
+      led_set_color(LED_RED);
+    } else {  // rot blinken
+      led_blink(LED_RED, 500);
+    }
+
+    led_update();  // zeige Farbe
   }
 
-  led_update();  // zeige Farbe
 }
 
 float get_temperature() {
@@ -246,4 +245,108 @@ void sensor_handle_brightness() {
       led_adjust_brightness(255);  // 0...255
     }
   }
+}
+
+bool sensor_get_co2_autocalibration()
+{
+  return co2_sensor.getAutoSelfCalibration();
+}
+
+//switch on or off autocalibration for duration that we are powered (default is OFF)
+void sensor_set_co2_autocalibration(bool enable)
+{
+  co2_sensor.setAutoSelfCalibration(enable);
+#if SERIAL_OUTPUT > 0
+  Serial.print("CO2 AutoCalibration: ");
+  Serial.println(enable);
+#endif
+}
+
+void sensor_allow_co2_force_recalibration(bool allow)
+{
+  if (allow)
+  {
+    sensor_frc_allowed_timeout_ = 60; //60*2s = 2min
+#if SERIAL_OUTPUT > 0
+    Serial.println("CO2 ForceReCalibration now allowed for 2min via MQTT");
+#endif
+  }
+  else
+    sensor_frc_allowed_timeout_ = 0;
+}
+
+
+// eg: use 400ppm = Frischluft
+void sensor_do_co2_force_recalibration(uint32_t externally_accurately_measured_co2_value)
+{
+  if (externally_accurately_measured_co2_value < 400 || externally_accurately_measured_co2_value > 2000)
+  {
+    return;
+  }
+  if (0 == sensor_frc_allowed_timeout_)
+  {
+#if SERIAL_OUTPUT > 0
+    Serial.println("CO2 Sensor ForceReCalibration current not allowed");
+#endif
+    return;
+  }
+
+  sensor_allow_co2_force_recalibration(false); //reset timeout
+
+#if SERIAL_OUTPUT > 0
+  Serial.println("CO2 Sensor ForceReCalibration started");
+#endif
+
+  //as a precaution, ensure measured value remains stable for 2minutes!!
+  //also ensure, forced calibration is not more than 400ppm off from measured value
+
+  unsigned int okay = 0, co2_last = co2, co2_first = co2;
+
+  for (okay = 0; okay < 60;)
+  {  // mindestens 60 Messungen (ca. 2 Minuten)
+
+    led_one_by_one(LED_YELLOW, 100);
+    led_update();
+
+    if (co2_sensor.dataAvailable())  // alle 2s
+    {
+      co2 = co2_sensor.getCO2();
+      temp = co2_sensor.getTemperature();
+      humi = co2_sensor.getHumidity();
+
+      if ((co2 > co2_first - 90) && (co2 < co2_first + 90) && (co2 > (co2_last - 30)) &&
+          (co2 < (co2_last + 30)))  //+/-30ppm Toleranz zum vorherigen Wert
+      {
+        okay++;
+      } else {
+        okay = 0;
+#if SERIAL_OUTPUT > 0
+        Serial.println("FAIL: co2 measurement not stable");
+#endif
+        led_blink(LED_RED,300);
+        led_blink(LED_VIOLET,300);
+        led_blink(LED_RED,300);
+        led_blink(LED_VIOLET,300);
+        return; // ABORT
+      }
+
+      co2_last = co2;
+      show_data();
+    }
+  }
+
+  //done: co2 reference value has remained stable
+  led_set_color(LED_GREEN);
+
+#if SERIAL_OUTPUT > 0
+  Serial.println("ok, values remained stable");
+#endif
+
+  co2_sensor.setForcedRecalibrationFactor(externally_accurately_measured_co2_value);
+#if SERIAL_OUTPUT > 0
+  Serial.println("CO2 Sensor ForceReCalibration finished");
+#endif
+  buzzer_ack();
+  led_blink(LED_GREEN,900);
+  led_blink(LED_GREEN,900);
 }

@@ -12,10 +12,17 @@ byte connecting_tick = 0;
 byte led_tick = 0;
 byte led_brightness = BRIGHTNESS;
 
+void fill_num_leds(uint32_t color, int leds) {
+  ws2812.clear();
+  for (int i = 0; i < leds && i < 4; i++) {
+    ws2812.setPixelColor(i, color);
+  }
+  ws2812.show();
+}
+
 void fill_led_by_led(uint32_t color) {
   for (int i = 0; i < 4; i++) {
-    ws2812.setPixelColor(i, color);
-    ws2812.show();
+    fill_num_leds(color, i);
     delay(100);
   }
 }

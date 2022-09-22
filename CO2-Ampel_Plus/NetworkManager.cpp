@@ -309,8 +309,8 @@ void handleJSONResponse(){
 
   
   sprintf(jsonMessage,
-        "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%s\",\"lux\":\"%i\", \"mqtt\":\"%i\", \"firmware\":\"%s\"}",
-        get_co2(), tempMessage, humMessage, get_brightness(), mqtt_broker_connected(), versionNumber);
+        "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%s\",\"lux\":\"%i\", \"mqtt\":\"%i\", \"firmware\":\"%s\", \"co2ASC\":%i}",
+        get_co2(), tempMessage, humMessage, get_brightness(), mqtt_broker_connected(), versionNumber, sensor_get_co2_autocalibration());
   
   server.send(200,F("application/json"), jsonMessage);
 }

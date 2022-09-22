@@ -4,6 +4,7 @@
 
 extern byte led_tick;
 // void led_pulse();
+void fill_num_leds(uint32_t color, int leds);
 void fill_led_by_led(uint32_t color);
 void led_ack();
 void led_one_by_one(uint32_t color, int interval);

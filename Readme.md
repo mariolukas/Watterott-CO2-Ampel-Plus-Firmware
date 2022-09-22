@@ -47,6 +47,18 @@ Die Ampel verfügt über zwei Tasten. Die von der USB Buchse aus links gelegene 
 
 ![Co2 Ampel Pro Tastenbelegung](docs/images/Tastenbelegung.png)
 
+Prinzipiell gibt es folgende Tastenkombinationen:
+
+- Reset 1x drücken: Reboot
+- Reset 2x drücken: Boot into USB-Storage flash mode
+- Reset drücken während Mode gehalten wird: Factory Reset
+- Mode lange halten: AP Konfigurationsmodus starten
+- Mode 1x drücken: Buzzer toggeln
+- Mode 2x drücken: Self-Calibration ausschalten
+- Mode 3x drücken: Self-Calibration einschalten
+- Mode 4x drücken: Force-Re-Calibration ermöglichen
+
+
 ### Startvorgang und Normalmodus
 Nachdem Einschalten leuchtet die Ampel zunächst weiß. Zu diesem Zeitpunkt wird unter anderem der CO2 Sensor initialisiert.
 Sobald die LEDs von weiß auf Grün, Gelb, Rot oder Rot blinken wechseln, befindet sich die Ampel im Normalbetrieb und zeigt den aktuellen CO2 Status an.
@@ -84,6 +96,52 @@ Diese Daten können dann bequem über das oben stehende Projekt mittels Grafana 
 
 Die Ampel kann auf die Standard Werte zurückgesetzt werden, indem man den Mode Taster gedrückt hält, während man über den Reset Taster einmal kurz betätigt. (Alternativ kann man auch die Spannungsversorgung vom Gerät trennen und bei gedrücktem Mode Taster wieder einstecken). Ein kurzes rotes Aufblinken vor dem Normalbetrieb zeigt an, dass die Ampel erfolgreich zurückgesetzt wurde.
 
+### Buzzer toggeln
+
+Mit einem einfachen Druck des Mode-Taster wird der Buzzer ein bzw ausgeschalten. Nach dem Druck ertönt kurz der Buzzer, dann wechselt die eizeln gelb leuchtende LED zur Bestätigung auf violett. 
+
+Ist der Buzzer danach aus, ertönt noch einmal der Buzzer (insgesammt also 2x).
+
+Ist de Buzzer danach ein, ertönt noch zweimal der Buzzer (insgesammt also 3x).
+
+### CO2-Sensor Kalibration
+
+Sollte so gut wie nie nötig sein. Im Zweifelsfall unterlassen da der Sensor vorkalibriert ausgeliefert wird. Der Sensor ist jedoch stoßempfindlich, was manchmal trotzallem eine Nachkalibration nötig macht.
+
+Es gibt zwei Möglichkeiten:
+
+1. ASC - Auto-Self-Calibration einschalten.
+2. FRC - Force ReCalibration verwenden, wenn der aktuelle CO2 Wert bekannt ist. (z.b. durch ein genaues CO2-Referenz-messgerät)
+
+Die Empfehlung ist, erst ASC auszuprobieren, bevor FRC genutzt wird, da ASC auf der genaueren Fabrikskalibration aufbaut, während FRC diese überschreibt.
+
+#### Auto-Self-Calibration einschalten
+
+Für ASC muss der Sensor über einen Zeitraum von mindestens 7 Tagen regelmäßig für eine gewisse Zeit mit Frischluft in Kontakt kommen. Empfohlen ist 1 Stunde pro Tag für mindestens 7 Tage.
+
+Wird in dieser Zeit die Stromversorgung unterbrochen, startet die Kalbrierung von vorne und es werden erneut mindestens 7 Tage benötigt.
+
+Bis eine ASC Kalibrierung abgeschlossen ist, werden die Kalibrierungswerte der letzten ASC verwendet.
+
+Um ASC Einzuschalten, drücke den MODE-Taster 3x bis die dritte LED Gelb leuchtet. Als Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Hellgrün.
+
+Um ASC Auszuschalten, drücke den MODE-Taster 2x bis die zweite LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Dunkelgrün.
+
+ASC kann auch via MQTT ein- bzw ausgeschalten werden:
+
+Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}` an topic e.g. `sensors/CO2Ampel/set`
+
+
+#### Force ReCalibration durchführen.
+
+1. Das CO2-Referenzgerät (notfalls einen zweiten SC30) neben den Sensor stellen.
+2. Warten bis die CO2 Werte für zumindest 3 Minuten stabil sind. Atmen und Bewegung im Raum sind nicht hilfreich. Ein abgeschlossener Behälter für beide Geräte schon.
+3. MODE-Taster 4x drücken, bis die vierte LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Gelb.
+4. CO2-Wert des Referenzgerätes ablesen. Gesetzt werden können nur Referenzwerte zwischen 400 und 2000 ppm.
+5. Innerhalb von 2 Minuten, den aktuellen CO2-Wert via MQTT setzten: `{"force_recalibrate_co2": <integer-ppm-wert>}`. **Achtung**: überschreibt Fabrikskalibration.
+6. Der Sensor prüft nun für 2 Minuten ob der aktuelle CO2-Wert stabil bleibt. Dann wird die neue Messreferenz im Sensor fix abgespeichert.
+
+Die wirklich Verzweifelten, welche auf Messgenauigkeit keinen so hohen Wert legen, können den Sensor für 2min mit Akkupack an die frische Luft in WLAN Nähe legen, und dann den Sensor auf 400ppm (Frischluft) zwangskalibrieren.
 
 ## Neue Ampel Firmware Version installieren
 Um eine neue Ampel Firmware zu installieren, muss die Ampel in den Massenspeicher Modus versetzt werden. Dies kann man erreichen, indem man den Reset Taster (linker Taster) zweimal kurz hintereinander drückt. Die Ampel meldet sich ähnlich wie ein USB Stick als neues Laufwerk am Rechner an.
@@ -131,8 +189,26 @@ welche über den Bibliotheksmanager (Werkzeuge -> Bibliotheken verwalten) instal
 Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
 
 
-## LED Fehlercodes
-### Blaues Blinken
+## LED Fehlercodes und Statuscodes
+
+
+### Gelbes Leuten mit ein bis vier LEDs
+
+Mode-Knopf wurde ein, zwei, drei oder viermal gedrückt um die entsprechende Funktion zu selektieren.
+
+### Violettes Blinken mit ein bis vier LEDs
+
+Bestätigung dass die mittels Mode-Knopf selektierte Funktion ausgewählt wurde.
+
+### Blaues Leuchten, alle LEDS
+
+Access-Point Konfigurations Modus aktiv.
+
+### Weißes Leuchten, alle LEDS
+
+CO2 Sensor noch nicht initialisiert.
+
+### Blaues Blinken, immer zwei LEDs abwechselnd
 Ein Fehler beim Aufbau des Access Points im AP Modus ist aufgetreten. In der Regel hilft ein einfaches Neustarten der Ampel. Anschließend kann man erneut versuchen, den Access Point Modus zu starten.
 
 Es kann jedoch auch bedeuten, dass die Ampel die WLAN Verbindung verloren hat. In diesem Fall laufen die Messungen auf der Ampel weiter, jedoch taucht zwischendurch immer wieder blaues Blinken auf. In diesem Fall sollte die WLAN Verbindung überprüft werden.

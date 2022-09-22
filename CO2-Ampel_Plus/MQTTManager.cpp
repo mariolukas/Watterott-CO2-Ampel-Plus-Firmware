@@ -163,4 +163,32 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
     config_set_values(cfg);
   }
+  if (doc.containsKey("temperature_calibrate_set_current_roomtemp")) {
+    float true_room_temperature = doc["temperature_calibrate_set_current_roomtemp"].as<float>();
+    float measured_temp = get_temperature();
+    float temp_relative_offset = true_room_temperature - measured_temp;
+    if (true_room_temperature != 0 && (temp_relative_offset > 0.01 || temp_relative_offset < 0.01) && temp_relative_offset < 40.0 && temp_relative_offset > -40.0)
+    {
+      float new_absolute_temperature_offset = sensor_set_relative_temperature_offset(temp_relative_offset);
+      cfg.temperature_offset = new_absolute_temperature_offset;
+      config_set_values(cfg);
+    }
+  }
+  if (doc.containsKey("asc_enabled")) {
+    String asc_enabled = doc["asc_enabled"];
+    if (asc_enabled.equalsIgnoreCase(F("true"))) {
+      Serial.println("AutoSelfCalibration enabled via MQTT");
+      sensor_set_co2_autocalibration(true);
+    } else if (asc_enabled.equalsIgnoreCase(F("false"))) {
+      Serial.println("AutoSelfCalibration disabled via MQTT");
+      sensor_set_co2_autocalibration(false);
+    }
+  }
+  if (doc.containsKey("force_recalibrate_co2")) {
+    long int frc_co2_value = doc["force_recalibrate_co2"].as<long>();
+    if (frc_co2_value >= 400 && frc_co2_value <= 2000) {
+      Serial.println("CO2 ForceRecalibration requested");
+      sensor_do_co2_force_recalibration(frc_co2_value);
+    }
+  }
 }

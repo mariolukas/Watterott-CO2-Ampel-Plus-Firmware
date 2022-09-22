@@ -32,6 +32,7 @@
 #include "MQTTManager.h"
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
+uint8_t button_press_ctr_=0;
 const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
 
@@ -94,6 +95,46 @@ void setup() {
   Serial.println("Setup complete!");
   Serial.println("------------------------");
 #endif
+Serial.print("CO2 Sensor AutoCalibration is: ");
+Serial.println(sensor_get_co2_autocalibration());
+}
+
+void handle_button_action(uint8_t action) {
+  buzzer_ack();
+  fill_num_leds(LED_DARKVIOLET, action);
+  delay(700);
+  switch(action) {
+    case 1:
+      if (config_is_initialized()) {
+        device_config_t cfg = config_get_values();
+        cfg.buzzer_enabled = !cfg.buzzer_enabled;
+        config_set_values(cfg);
+        if (cfg.buzzer_enabled)
+        {
+          buzzer_ack(); //if  on: beep twice
+          delay(200);   //if off: beep once
+        }
+        buzzer_ack();
+      }
+      break;
+    case 2:
+      sensor_set_co2_autocalibration(false);
+      led_blink(LED_DARKGREEN, 600);
+      delay(400);
+      break;
+    case 3:
+      sensor_set_co2_autocalibration(true);
+      led_blink(LED_GREEN, 600);
+      delay(400);
+      break;
+    case 4:
+      sensor_allow_co2_force_recalibration(true);
+      led_blink(LED_YELLOW, 600);
+      delay(400);
+      break;
+    default:
+      return;
+  }
 }
 
 void loop() {
@@ -103,11 +144,23 @@ void loop() {
   modeButton.read();
   if (modeButton.pressedFor(3000)) {
     wifi_state = WIFI_MODE_AP_INIT;
+    button_press_ctr_ = 0;
+  } else if (button_press_ctr_ > 0 && modeButton.releasedFor(1900)) {
+    handle_button_action(button_press_ctr_);
+    button_press_ctr_ = 0;
+  } else if (modeButton.wasPressed()) {
+    button_press_ctr_++;
+    button_press_ctr_ %= 5;
+#if DEBUG_LOG > 0
+    Serial.print("Button Press ");
+    Serial.println(button_press_ctr_);
+#endif
+    delay(100);
   }
 
   switch (wifi_state) {
     case WIFI_MODE_AP_INIT:  // Create  an Access  Point
-#if DEBUG_LOG > 0  
+#if DEBUG_LOG > 0
       Serial.println("Creating Access Point");
 #endif
       wifi_ap_create();
@@ -147,11 +200,15 @@ void loop() {
   if (!wifi_is_connected()) {
     wifi_state = WIFI_MODE_WPA_CONNECT;
   }
-  
+
 
   mqtt_loop();
-  sensor_handler();
+  sensor_handler(0 == button_press_ctr_);
+  if (button_press_ctr_ > 0)
+  {
+    fill_num_leds(LED_DARKYELLOW, button_press_ctr_);     //visualize button
+  }
   sensor_handle_brightness();
   wifi_handle_client();
-    
+
 }
