@@ -189,8 +189,26 @@ welche über den Bibliotheksmanager (Werkzeuge -> Bibliotheken verwalten) instal
 Die meisten Einstellungen wie Schwellwerte für die Ampel sowie Standard-Einstellungen finden sich in der Datei ```Config.h``` wieder.
 
 
-## LED Fehlercodes
-### Blaues Blinken
+## LED Fehlercodes und Statuscodes
+
+
+### Gelbes Leuten mit ein bis vier LEDs
+
+Mode-Knopf wurde ein, zwei, drei oder viermal gedrückt um die entsprechende Funktion zu selektieren.
+
+### Violettes Blinken mit ein bis vier LEDs
+
+Bestätigung dass die mittels Mode-Knopf selektierte Funktion ausgewählt wurde.
+
+### Blaues Leuchten, alle LEDS
+
+Access-Point Konfigurations Modus aktiv.
+
+### Weißes Leuchten, alle LEDS
+
+CO2 Sensor noch nicht initialisiert.
+
+### Blaues Blinken, immer zwei LEDs abwechselnd
 Ein Fehler beim Aufbau des Access Points im AP Modus ist aufgetreten. In der Regel hilft ein einfaches Neustarten der Ampel. Anschließend kann man erneut versuchen, den Access Point Modus zu starten.
 
 Es kann jedoch auch bedeuten, dass die Ampel die WLAN Verbindung verloren hat. In diesem Fall laufen die Messungen auf der Ampel weiter, jedoch taucht zwischendurch immer wieder blaues Blinken auf. In diesem Fall sollte die WLAN Verbindung überprüft werden.
