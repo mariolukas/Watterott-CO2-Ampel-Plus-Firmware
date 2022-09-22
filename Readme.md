@@ -104,6 +104,19 @@ Ist der Buzzer danach aus, ertönt noch einmal der Buzzer (insgesammt also 2x).
 
 Ist de Buzzer danach ein, ertönt noch zweimal der Buzzer (insgesammt also 3x).
 
+### Temperatur-Sensor Kalibration
+
+1. Warten bis die Temperaturmessung des CO2-Sensor stabil konvergiert. Zumindest 15 Minuten seit dem Anstecken vergehen lassen.
+1. Die aktuelle Raumtemperatur mit einem vertrauenswürdigen Thermometer messen.
+2. Die aktuelle Raumtermperatur mittels MQTT an den Sensor senden.
+
+#### Beispiel
+
+Im Beispiel ist die Raumtemperatur mit 23.5°C gemessen worden.
+
+MQTT Command: `{"temperature_calibrate_set_current_roomtemp": 23.5}` an topic e.g. `sensors/CO2Ampel/set`
+
+
 ### CO2-Sensor Kalibration
 
 Sollte so gut wie nie nötig sein. Im Zweifelsfall unterlassen da der Sensor vorkalibriert ausgeliefert wird. Der Sensor ist jedoch stoßempfindlich, was manchmal trotzallem eine Nachkalibration nötig macht.
