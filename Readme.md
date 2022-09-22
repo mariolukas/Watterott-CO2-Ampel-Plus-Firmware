@@ -127,11 +127,9 @@ Um ASC Einzuschalten, drücke den MODE-Taster 3x bis die dritte LED Gelb leuchte
 
 Um ASC Auszuschalten, drücke den MODE-Taster 2x bis die zweite LED Gelb leuchtet. Zur Bestätigung für den gewählten Modus schalten die LEDs auf Violett und blinken dann Dunkelgrün.
 
-ASC kann auch via MQTT eingeschalten werden.
+ASC kann auch via MQTT ein- bzw ausgeschalten werden:
 
-Dafür zuerst den MODE-Taster 1x drücken. Nun ist es für 1h möglich, die Kalibration zu konfigurieren.
-
-Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}` an e.g. topic `sensors/CO2Ampel/set`
+Via MQTT senden: `{"asc_enabled": true}` bzw `{"asc_enabled": false}` an topic e.g. `sensors/CO2Ampel/set`
 
 
 #### Force ReCalibration durchführen.
