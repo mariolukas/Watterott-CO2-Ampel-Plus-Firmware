@@ -166,7 +166,7 @@ void sensor_set_temperature_offset(float offset) {
 
 float sensor_set_relative_temperature_offset(float relative_offset) {
   float offset = co2_sensor.getTemperatureOffset();
-  offset += relative_offset;
+  offset -= relative_offset;
   sensor_set_temperature_offset(offset);
   return offset;
 }
