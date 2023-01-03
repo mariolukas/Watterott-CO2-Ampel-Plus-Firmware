@@ -6,10 +6,13 @@
 #include "LED.h"
 #include "NetworkManager.h"
 
+constexpr uint32_t MQTT_LOOP_TASK_PERIOD_MS = 10;
+
+extern Task task_mqtt;
+extern Task task_mqtt_send_value;
+
 bool mqtt_connect();
-void mqtt_send_value(int co2, float temp, int hum, int lux);
 bool mqtt_broker_connected();
-void mqtt_loop();
 void mqtt_message_received(char* topic, byte* payload, unsigned int length);
 
 #endif

@@ -22,22 +22,42 @@
 */
 #include <Arduino.h>
 #include <JC_Button.h>
+#include <TaskScheduler.h>
 #include <WiFi101.h>
+#include <vector>
 #include "Buzzer.h"
+#include "CO2Sensor.h"
 #include "Config.h"
 #include "DeviceConfig.h"
+#include "HTTP.h"
 #include "LED.h"
+#include "LEDPatterns.h"
+#include "LightSensor.h"
 #include "MQTTManager.h"
 #include "NetworkManager.h"
-#include "Sensor.h"
+#include "SerialCommand.h"
+
+Scheduler ts;
+
+#define HEARTBEAT_PERIOD 1000
+void task_heartbeat_cb();
+Task task_heartbeat(  //
+    HEARTBEAT_PERIOD* TASK_MILLISECOND,
+    -1,
+    &task_heartbeat_cb,
+    &ts,
+    true);
+
+void task_heartbeat_cb() {
+  Serial.print("heartbeat ");
+  Serial.println(task_heartbeat.getRunCounter());
+}
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
 const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
 
 Button modeButton(BUTTON_PIN);
-
-int wifi_reconnect_attemps = WIFI_RECONNECT_ATTEMPTS;
 
 void setup() {
 #if DEBUG_LOG > 0
@@ -46,6 +66,7 @@ void setup() {
   }
 #endif
   Serial.begin(115200);
+
   Serial.println("------------------------");
   Serial.println("Starting setup...");
   Serial.println("Watterott CO2 Ampel PLUS");
@@ -60,80 +81,78 @@ void setup() {
   Serial.println("in production environment!");
 #endif
 
-  led_init();
-  led_test();
-  led_set_color(LED_WHITE);
-  led_update();
-
   modeButton.begin();
   modeButton.read();
 
-  buzzer_init();
-  buzzer_test();
-
-  sensor_init();
-  /**
-   * Factory Reset when button is pressed while reset
-   */
+  // Factory Reset when button is pressed while reset
   if (!config_is_initialized() || modeButton.isPressed()) {
     Serial.println("Loading factory defaults");
-    led_off();
-    led_set_color(LED_RED);
-    led_update();
-    delay(50);
     config_set_factory_defaults();
-    led_off();
   }
-  Serial.println("Setup complete!");
+
+  init_leds();
+  task_led.enable();
+
+  led_state_queue.push(led_state_t{
+      set_leds_circle_cw, 50, -1,
+      std::vector<uint32_t>{LED_RED, LED_YELLOW, LED_GREEN, LED_BLUE}, 0});
+
+  buzzer_init();
+  buzzer_test();
+  init_light_sensor();
+
+  task_init_co2_sensor.enable();
+
+  switch (wifi_state) {
+      /*
+      // TODO: AP mode disabled for now
+      case WIFI_MODE_AP_INIT:  // Create  an Access  Point
+        Serial.println("Creating Access Point");
+        wifi_ap_create();
+        wifi_state = WIFI_MODE_AP_LISTEN;
+        Serial.println("------------------------");
+        break;
+      */
+
+    case WIFI_MODE_WPA_CONNECT:  // Connect to WiFi
+      task_wifi_connect.enable();
+      break;
+  }
+
+  task_serial_handler.enable();
+
+  bool all_tasks_done = false;
+  do {
+    bool task_wifi_connect_done = !task_wifi_connect.isEnabled();
+    bool task_init_co2_sensor_done = !task_init_co2_sensor.isEnabled();
+    all_tasks_done = task_wifi_connect_done && task_init_co2_sensor_done;
+
+    ts.execute();
+  } while (!all_tasks_done);
+
+  led_default_on(LED_WHITE);
+  led_queue_flush();
+
+  Serial.println("Init complete!");
   Serial.println("------------------------");
+
+  task_trigger_read_light_sensor.enable();
+  task_read_co2_sensor.enable();
+  task_http_server.enable();
+  task_mqtt.enable();
 }
 
 void loop() {
   /**
    * Start WiFi Access Point when Button is pressed for more than 3 seconds
    */
+  /*
+  TODO: Handle this nicer
   modeButton.read();
   if (modeButton.pressedFor(3000)) {
     wifi_state = WIFI_MODE_AP_INIT;
   }
+  */
 
-  switch (wifi_state) {
-    case WIFI_MODE_AP_INIT:  // Create  an Access  Point
-      Serial.println("Creating Access Point");
-      wifi_ap_create();
-      wifi_state = WIFI_MODE_AP_LISTEN;
-      Serial.println("------------------------");
-      break;
-
-    case WIFI_MODE_WPA_CONNECT:  // Connect to WiFi
-
-      device_config_t cfg = config_get_values();
-      Serial.print("Connecting to SSID ");
-      Serial.print(cfg.wifi_ssid);
-      Serial.println(" Wifi");
-      if (strlen(cfg.wifi_ssid) != 0) {
-        if (wifi_wpa_connect() == WL_CONNECTED) {
-          wifi_state = WIFI_MODE_WPA_LISTEN;
-        } else {
-          wifi_state = WIFI_MODE_WPA_CONNECT;
-        }
-      } else {
-        Serial.println("No WiFi SSID Configured.");
-        wifi_state = WIFI_MODE_NOT_CONECTED;
-      }
-      Serial.println("------------------------");
-      Serial.println("Start measurement");
-      Serial.println("");
-      break;
-  }
-
-  if (!wifi_is_connected()) {
-    wifi_state = WIFI_MODE_WPA_CONNECT;
-  }
-
-  mqtt_loop();
-
-  wifi_handle_client();
-  sensor_handler();
-  sensor_handle_brightness();
+  ts.execute();
 }

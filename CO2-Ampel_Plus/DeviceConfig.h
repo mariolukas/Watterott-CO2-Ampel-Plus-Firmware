@@ -5,18 +5,19 @@
 typedef struct {
   int change_count;
   char wifi_ssid[40];
-  char wifi_password[70];
-  char ap_password[40];
+  char wifi_password[64];
+  char ap_password[64];
   int mqtt_broker_port;
-  char mqtt_broker_address[20];
-  char mqtt_topic[20];
-  char ampel_name[40];
+  char mqtt_broker_address[32];
+  char mqtt_topic[32];
+  char ampel_name[32];
   float temperature_offset;
-  char mqtt_username[20];
-  char mqtt_password[20];
+  char mqtt_username[32];
+  char mqtt_password[64];
   int mqtt_format;
   bool light_enabled;
   bool buzzer_enabled;
+  int led_brightness;
 } device_config_t;
 
 void config_set_factory_defaults();

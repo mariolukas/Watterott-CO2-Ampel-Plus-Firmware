@@ -3,6 +3,8 @@
 #include "Config.h"
 #include "DeviceConfig.h"
 #include "LED.h"
+#include "LightSensor.h"
+#include "scheduler.h"
 
 WiFiClient wifi_client;
 PubSubClient mqttClient(wifi_client);
@@ -19,7 +21,7 @@ bool mqtt_connect() {
   if (strcmp(cfg.mqtt_broker_address, "127.0.0.1")) {
     sprintf(willTopic, "%s/%s/%s", cfg.mqtt_topic, cfg.ampel_name,
             MQTT_LWT_SUBTOPIC);
-    led_set_color(LED_WHITE);
+    // led_set_color(LED_WHITE);
     Serial.print("Connecting to ");
     Serial.print(cfg.mqtt_broker_address);
     Serial.print(":");
@@ -53,21 +55,62 @@ bool mqtt_connect() {
   return false;
 }
 
-void mqtt_loop() {
-  mqttClient.loop();
+enum MQTT_STATES {
+  CONNECT,
+  CONNECTED,
+};
+
+void mqtt();
+Task task_mqtt(  //
+    MQTT_LOOP_TASK_PERIOD_MS* TASK_MILLISECOND,
+    -1,
+    mqtt,
+    &ts);
+
+void mqtt() {
+  static MQTT_STATES state = MQTT_STATES::CONNECT;
+
+  switch (state) {
+    case MQTT_STATES::CONNECT: {
+      bool connected = mqtt_connect();
+      if (connected == true) {
+        state = MQTT_STATES::CONNECTED;
+      } else {
+        task_mqtt.delay(200);
+      }
+    } break;
+
+    case MQTT_STATES::CONNECTED:
+      mqttClient.loop();
+      break;
+  }
 }
 
 bool mqtt_broker_connected() {
   return mqttClient.connected();
 }
 
-void mqtt_send_value(int co2, float temp, int hum, int lux) {
+void mqtt_send_value();
+Task task_mqtt_send_value(  //
+    10 * TASK_MILLISECOND,
+    -1,
+    mqtt_send_value,
+    &ts);
+
+void mqtt_send_value() {
   if (mqttClient.connected()) {
     device_config_t cfg = config_get_values();
     char mqttTopic[128];
     char mqttMessage[512];
     char tempMessage[20];
-    sprintf(tempMessage, "%d.%02d", (int)temp, (int)(temp * 100) % 100);
+
+    co2_sensor_measurement_t co2_sensor_measurement;
+    bool measurement_valid = get_co2_sensor_measurement(co2_sensor_measurement);
+
+    int brightness = get_ambient_brightness();
+
+    sprintf(tempMessage, "%d.%02d", co2_sensor_measurement.temperature,
+            (int)(co2_sensor_measurement.temperature * 100) % 100);
 
     if (cfg.mqtt_format ==
         0) {  // sending data in JSON Format to specified topic...
@@ -77,28 +120,32 @@ void mqtt_send_value(int co2, float temp, int hum, int lux) {
       Serial.print("TempMQTTMessage: ");
       Serial.println(tempMessage);
 #endif
-      sprintf(
-          mqttMessage,
-          "{\"co2\":\"%i\",\"temp\":\" %s \",\"hum\":\"%i\",\"lux\":\"%i\"}",
-          co2, tempMessage, hum, lux);
-      if (mqttClient.publish(mqttTopic, mqttMessage)) {
-        Serial.println("Data publication successfull.");
+      if (measurement_valid == true) {
+        DynamicJsonDocument doc(256);
+        doc["co2"] = co2_sensor_measurement.co2;
+        doc["temp"] = co2_sensor_measurement.temperature;
+        doc["hum"] = co2_sensor_measurement.humidity;
+        doc["lux"] = get_ambient_brightness();
+        serializeJson(doc, mqttMessage);
+        if (mqttClient.publish(mqttTopic, mqttMessage)) {
 #if DEBUG_LOG > 0
-        Serial.print("Message: ");
-        Serial.println(mqttMessage);
-        Serial.print("Topic: ");
-        Serial.print(mqttTopic);
+          Serial.print("Message: ");
+          Serial.println(mqttMessage);
+          Serial.print("Topic: ");
+          Serial.print(mqttTopic);
 #endif
-      } else {
-        Serial.println(
-            "Data publication failed, either connection lost or message too "
-            "large.");
-      };
-
+        } else {
+          Serial.println(
+              "Data publication failed, either connection lost or message too "
+              "large.");
+        };
+      }
     } else {  // sending data in influxdb format
 
+      // TODO: this is probably broken!
       sprintf(mqttMessage, "co2ampel,name=%s,co2=%i,temp=%s,hum=%i,lux=%i",
-              cfg.ampel_name, co2, tempMessage, hum, lux);
+              cfg.ampel_name, co2_sensor_measurement.co2, tempMessage,
+              co2_sensor_measurement.humidity, brightness);
       if (mqttClient.publish(cfg.mqtt_topic, mqttMessage)) {
         Serial.println("Data publication successfull.");
 
@@ -115,14 +162,13 @@ void mqtt_send_value(int co2, float temp, int hum, int lux) {
             "large.");
       };
     }
-
   } else {
     Serial.println(
         "Data publication failed, client is not connected. Trying to "
         "reconnect.");
     mqtt_connect();
   }
-  mqttClient.loop();
+  task_mqtt_send_value.disable();
 }
 
 void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
@@ -156,7 +202,7 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       cfg.light_enabled = false;
     }
     config_set_values(cfg);
-    led_set_brightness();
+    // led_set_brightness();
   }
   if (doc.containsKey("buzzer_enabled")) {
     String buzzer_enabled = doc["buzzer_enabled"];

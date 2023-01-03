@@ -24,10 +24,10 @@
 
 // Ermuedung
 #define START_GREEN 550
-#define START_YELLOW 1000       // >= 1000ppm
-#define START_RED 1400          // >= 1200ppm
-#define START_RED_BLINK 1600    // >= 1400ppm
-#define START_BUZZER 1600       // >= 1600ppm
+#define START_YELLOW 1000     // >= 1000ppm
+#define START_RED 1400        // >= 1200ppm
+#define START_RED_BLINK 1600  // >= 1400ppm
+#define START_BUZZER 1600     // >= 1600ppm
 #define START_VIOLET 1800
 
 //--- WiFi configuration ---
@@ -62,7 +62,8 @@
 
 //--- LED configuration ---
 #define LIGHT_ENABLED true
-#define BRIGHTNESS 180     // 1-255
+#define BRIGHTNESS 180  // 1-255
+#define BRIGHTNESS_AUTO -1
 #define BRIGHTNESS_DARK 5  // 1-100%
 #define NUMBER_OF_WS2312_PIXELS 4
 #define NUMBER_OF_WS2812_LEDS 4
@@ -76,7 +77,7 @@
 
 #define LED_COLOR_WIFI_MANAGER 0X0000FF
 #define LED_COLOR_WIFI_CONNECTING 0X00FF00
-#define LED_COLOR_WIFI_FAILURE 0X0000FF
+#define LED_COLOR_WIFI_FAILURE 0XFF0000
 
 //--- Light sensor configuration ---
 #define LIGHT_DARK 20        // <20 -> dark
@@ -93,7 +94,7 @@
 #define SERIAL_OUTPUT 1   // 1 = enable serial output (115200 bps)
 #define DISPLAY_OUTPUT 0  // 1 = enable display output
 
-#define STARTWERT 500  // 500ppm, CO2 starting value
+constexpr uint16_t STARTWERT = -1;  // 500ppm, CO2 starting value
 
 //--- Only touch if you know what you're doing! ---
 // STATES

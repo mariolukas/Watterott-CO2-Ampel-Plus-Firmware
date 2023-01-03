@@ -1,10 +1,12 @@
 additional_board_urls:
-  - "https://raw.githubusercontent.com/washed/CO2-Ampel/master/package_co2ampel_index.json"
+  - "https://raw.githubusercontent.com/watterott/CO2-Ampel/master/package_co2ampel_index.json"
 boards:
   - arduino:samd
   - co2ampel:samd
 libraries:
   - ArduinoJson
+  - CircularBuffer
+  - TaskScheduler
 compile:
   verbose: true
   warnings: more

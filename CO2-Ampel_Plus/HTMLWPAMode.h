@@ -148,8 +148,9 @@ const String wpa_root_html_middle =
     F("</style>\
 <meta charset=\"UTF-8\">\
 <title>CO2 Ampel Wifi AP</title>\
-<meta http-equiv=\"refresh\" content=\"3; URL=/\">\
 </head>\
 <body>");
+
+// <meta http-equiv=\"refresh\" content=\"3; URL=/\">\
 
 const String wpa_root_html_footer = F("</body></html>");

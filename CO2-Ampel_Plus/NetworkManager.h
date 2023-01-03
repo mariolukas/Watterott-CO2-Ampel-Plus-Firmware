@@ -2,30 +2,22 @@
 #define NETWORK_H
 #include <SPI.h>
 #include <WiFi101.h>
-#include "Buzzer.h"
-#include "HTMLAPMode.h"
-#include "HTMLWPAMode.h"
-#include "LED.h"
+#include "CO2Sensor.h"
 #include "MQTTManager.h"
-#include "Sensor.h"
+#include "scheduler.h"
 
 bool wifi_is_connected();
+uint8_t get_wifi_status();
 
+/*
+// TODO: AP mode disabled for now
 void wifi_ap_create();
-
 bool ap_is_active();
-
 void wifi_handle_ap_html();
-
-int wifi_wpa_connect();
-
-void wpa_listen_handler();
+*/
 
 void print_wifi_status();
 
-void print_wifi_status();
-
-void print_mac_address(byte mac[]);
-void wifi_handle_client();
+extern Task task_wifi_connect;
 
 #endif
