@@ -2,7 +2,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <queue>
 #include <vector>
-#include "Buzzer.h"
 #include "Config.h"
 #include "DeviceConfig.h"
 #include "LightSensor.h"
@@ -127,7 +126,7 @@ bool set_leds_alternate(led_state_t& led_state, uint32_t run_time_ms) {
 }
 
 void led();
-Task task_led(LED_DEFAULT_PERIOD_MS* TASK_MILLISECOND, -1, led, &ts);
+Task task_led(LED_DEFAULT_PERIOD_MS* TASK_MILLISECOND, -1, led);
 
 led_state_t led_default_state = {
     set_leds_off, LED_DEFAULT_PERIOD_MS, 0, std::vector<uint32_t>{0}, 0,
@@ -222,10 +221,10 @@ void led() {
   }
 }
 
-void run_until_queue_size(uint32_t stop_queue_size) {
+void run_until_queue_size(Scheduler& scheduler, uint32_t stop_queue_size) {
   auto queue_size = led_state_queue.size();
   do {
-    ts.execute();
+    scheduler.execute();
     queue_size = led_state_queue.size();
   } while (queue_size > stop_queue_size);
 }
@@ -234,7 +233,7 @@ void led_set_default(led_state_t led_state) {
   led_default_state = led_state;
 }
 
-void init_leds() {
+void init_leds(Scheduler& scheduler) {
 #if DEBUG_LOG > 0
   Serial.print("Initialise LEDs... ");
 #endif
@@ -245,6 +244,9 @@ void init_leds() {
   ws2812.clear();
   ws2812.show();
   led_queue_flush();
+
+  scheduler.addTask(task_led);
+  task_led.enable();
 #if DEBUG_LOG > 0
   Serial.println("done!");
 #endif

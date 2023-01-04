@@ -36,8 +36,7 @@ void http_server();
 Task task_http_server(  //
     HTTP_SERVER_TASK_PERIOD_MS* TASK_MILLISECOND,
     -1,
-    &http_server,
-    &ts);
+    &http_server);
 
 void http_server() {
   bool reboot = false;
@@ -330,3 +329,8 @@ void http_server() {
              }
              cfg = config_get_values();
        */
+
+void init_http_server(Scheduler& scheduler) {
+  scheduler.addTask(task_http_server);
+  task_http_server.enable();
+}

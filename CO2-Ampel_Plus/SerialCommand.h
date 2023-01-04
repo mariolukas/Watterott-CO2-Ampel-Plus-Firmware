@@ -3,6 +3,6 @@
 
 #include "scheduler.h"
 
-extern Task task_serial_handler;
+void init_serial(Scheduler& scheduler);
 
 #endif

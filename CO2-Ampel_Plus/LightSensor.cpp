@@ -9,18 +9,10 @@ uint16_t get_ambient_brightness() {
   return ambient_brightness;
 }
 
-void init_light_sensor() {
-  pinMode(PIN_LSENSOR_PWR, OUTPUT);
-  digitalWrite(PIN_LSENSOR_PWR, LOW);
-  pinMode(PIN_LSENSOR, INPUT);
-}
-
 void read_light_sensor();
-Task task_read_light_sensor(  //
-    LIGHT_SENSOR_TASK_PERIOD_MS* TASK_MILLISECOND,
-    -1,
-    read_light_sensor,
-    &ts);
+Task task_read_light_sensor(LIGHT_SENSOR_TASK_PERIOD_MS* TASK_MILLISECOND,
+                            -1,
+                            read_light_sensor);
 
 void read_light_sensor() {
   static LIGHT_SENSOR_STATES state = LIGHT_SENSOR_STATES::PRE_MEASURING;
@@ -69,9 +61,18 @@ void trigger_read_light_sensor();
 Task task_trigger_read_light_sensor(  //
     LIGHT_SENSOR_MEASUREMENT_PERIOD_MS* TASK_MILLISECOND,
     -1,
-    trigger_read_light_sensor,
-    &ts);
+    trigger_read_light_sensor);
 
 void trigger_read_light_sensor() {
   task_read_light_sensor.enableIfNot();
+}
+
+void init_light_sensor(Scheduler& scheduler) {
+  pinMode(PIN_LSENSOR_PWR, OUTPUT);
+  digitalWrite(PIN_LSENSOR_PWR, LOW);
+  pinMode(PIN_LSENSOR, INPUT);
+
+  scheduler.addTask(task_trigger_read_light_sensor);
+  scheduler.addTask(task_read_light_sensor);
+  task_trigger_read_light_sensor.enable();
 }

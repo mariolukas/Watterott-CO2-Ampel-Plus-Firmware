@@ -3,6 +3,8 @@
 
 #include <TaskSchedulerDeclarations.h>
 
-extern Scheduler ts;
+namespace TS {
+Scheduler& get_scheduler();
+}  // namespace TS
 
 #endif

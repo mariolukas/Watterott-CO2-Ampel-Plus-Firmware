@@ -4,6 +4,6 @@
 
 constexpr uint32_t HTTP_SERVER_TASK_PERIOD_MS = 10;
 
-extern Task task_http_server;
+void init_http_server(Scheduler& scheduler);
 
 #endif

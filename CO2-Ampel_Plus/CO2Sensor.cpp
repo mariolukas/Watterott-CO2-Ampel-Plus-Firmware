@@ -3,7 +3,6 @@
 #include <JC_Button.h>
 #include <SparkFun_SCD30_Arduino_Library.h>
 #include <Wire.h>
-#include "Buzzer.h"
 #include "Config.h"
 #include "DeviceConfig.h"
 #include "LEDPatterns.h"
@@ -124,14 +123,13 @@ enum INIT_CO2_SENSOR_STATES {
   FAILED,
 };
 
-void init_co2_sensor();
+void init_co2_sensor_cb();
 Task task_init_co2_sensor(  //
     INIT_CO2_SENSOR_TASK_PERIOD_MS* TASK_MILLISECOND,
     -1,
-    init_co2_sensor,
-    &ts);
+    init_co2_sensor_cb);
 
-void init_co2_sensor() {
+void init_co2_sensor_cb() {
   static INIT_CO2_SENSOR_STATES state = INIT_CO2_SENSOR_STATES::INIT;
   static uint32_t init_tries = 0;
 
@@ -168,6 +166,7 @@ void init_co2_sensor() {
       break;
     case INIT_CO2_SENSOR_STATES::STARTED:
       task_init_co2_sensor.disable();
+      task_read_co2_sensor.enable();
       break;
     case INIT_CO2_SENSOR_STATES::FAILED:
       Serial.println("Error: CO2 sensor not found.");
@@ -190,8 +189,7 @@ void read_co2_sensor();
 Task task_read_co2_sensor(  //
     CO2_SENSOR_TASK_PERIOD_MS* TASK_MILLISECOND,
     -1,
-    read_co2_sensor,
-    &ts);
+    read_co2_sensor);
 
 void read_co2_sensor() {
   static CircularBuffer<co2_sensor_measurement_t,
@@ -236,6 +234,12 @@ void read_co2_sensor() {
   } else {
     led_default_blink(LED_VIOLET);
   }
+}
+
+void init_co2_sensor(Scheduler& scheduler) {
+  scheduler.addTask(task_read_co2_sensor);
+  scheduler.addTask(task_init_co2_sensor);
+  task_init_co2_sensor.enable();
 }
 
 /*

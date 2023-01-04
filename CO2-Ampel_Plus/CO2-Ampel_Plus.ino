@@ -22,7 +22,6 @@
 */
 #include <Arduino.h>
 #include <JC_Button.h>
-#include <TaskScheduler.h>
 #include <WiFi101.h>
 #include <vector>
 #include "Buzzer.h"
@@ -36,21 +35,20 @@
 #include "MQTTManager.h"
 #include "NetworkManager.h"
 #include "SerialCommand.h"
-
-Scheduler ts;
+#include "scheduler.h"
 
 #define HEARTBEAT_PERIOD 1000
 void task_heartbeat_cb();
-Task task_heartbeat(  //
-    HEARTBEAT_PERIOD* TASK_MILLISECOND,
-    -1,
-    &task_heartbeat_cb,
-    &ts,
-    true);
+Task task(HEARTBEAT_PERIOD* TASK_MILLISECOND, -1, &task_heartbeat_cb);
 
 void task_heartbeat_cb() {
   Serial.print("heartbeat ");
-  Serial.println(task_heartbeat.getRunCounter());
+  Serial.println(task.getRunCounter());
+}
+
+void init_heartbeat(Scheduler& scheduler) {
+  scheduler.addTask(task);
+  task.enable();
 }
 
 byte wifi_state = WIFI_MODE_WPA_CONNECT;
@@ -58,6 +56,8 @@ const byte BUTTON_PIN(PIN_SWITCH);
 const unsigned long LONG_PRESS(3000);
 
 Button modeButton(BUTTON_PIN);
+
+auto scheduler = TS::get_scheduler();
 
 void setup() {
 #if DEBUG_LOG > 0
@@ -90,36 +90,30 @@ void setup() {
     config_set_factory_defaults();
   }
 
-  init_leds();
-  task_led.enable();
+  init_heartbeat(scheduler);
+  buzzer_init();
+  buzzer_test();
 
+  init_leds(scheduler);
   led_state_queue.push(led_state_t{
       set_leds_circle_cw, 50, -1,
       std::vector<uint32_t>{LED_RED, LED_YELLOW, LED_GREEN, LED_BLUE}, 0});
 
-  buzzer_init();
-  buzzer_test();
-  init_light_sensor();
-
-  task_init_co2_sensor.enable();
-
   switch (wifi_state) {
-      /*
-      // TODO: AP mode disabled for now
-      case WIFI_MODE_AP_INIT:  // Create  an Access  Point
-        Serial.println("Creating Access Point");
-        wifi_ap_create();
-        wifi_state = WIFI_MODE_AP_LISTEN;
-        Serial.println("------------------------");
-        break;
-      */
+      // // TODO: AP mode disabled for now
+      // case WIFI_MODE_AP_INIT:  // Create  an Access  Point
+      //   Serial.println("Creating Access Point");
+      //   wifi_ap_create();
+      //   wifi_state = WIFI_MODE_AP_LISTEN;
+      //   Serial.println("------------------------");
+      //   break;
 
     case WIFI_MODE_WPA_CONNECT:  // Connect to WiFi
-      task_wifi_connect.enable();
+      init_wifi_connect(scheduler);
       break;
   }
 
-  task_serial_handler.enable();
+  init_serial(scheduler);
 
   bool all_tasks_done = false;
   do {
@@ -127,22 +121,26 @@ void setup() {
     bool task_init_co2_sensor_done = !task_init_co2_sensor.isEnabled();
     all_tasks_done = task_wifi_connect_done && task_init_co2_sensor_done;
 
-    ts.execute();
+    scheduler.execute();
   } while (!all_tasks_done);
 
+  // buzzer_queue_flush();
   led_default_on(LED_WHITE);
   led_queue_flush();
 
   Serial.println("Init complete!");
   Serial.println("------------------------");
 
-  task_trigger_read_light_sensor.enable();
-  task_read_co2_sensor.enable();
-  task_http_server.enable();
-  task_mqtt.enable();
+  init_light_sensor(scheduler);
+  init_co2_sensor(scheduler);
+  init_http_server(scheduler);
+  init_mqtt(scheduler);
 }
 
 void loop() {
+  while (true) {
+    scheduler.execute();
+  }
   /**
    * Start WiFi Access Point when Button is pressed for more than 3 seconds
    */
@@ -153,6 +151,4 @@ void loop() {
     wifi_state = WIFI_MODE_AP_INIT;
   }
   */
-
-  ts.execute();
 }

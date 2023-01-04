@@ -34,6 +34,7 @@ struct co2_sensor_measurement_t {
   };
 };
 
+void init_co2_sensor(Scheduler& scheduler);
 void sensor_calibration();
 void sensor_set_temperature_offset(float offset);
 

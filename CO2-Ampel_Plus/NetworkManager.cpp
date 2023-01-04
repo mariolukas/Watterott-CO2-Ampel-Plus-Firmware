@@ -76,7 +76,7 @@ WIFI_CONNECT_STATES wifi_connect_state = WIFI_CONNECT_STATES::INIT;
 
 void wifi_wpa_connect();
 
-Task task_wifi_connect(500 * TASK_MILLISECOND, -1, &wifi_wpa_connect, &ts);
+Task task_wifi_connect(500 * TASK_MILLISECOND, -1, &wifi_wpa_connect);
 
 void wifi_wpa_connect() {
   uint8_t wifi_status = WiFi.status();
@@ -135,6 +135,11 @@ void wifi_wpa_connect() {
       // TODO: What do we do here? Reboot?
       break;
   }
+}
+
+void init_wifi_connect(Scheduler& scheduler) {
+  scheduler.addTask(task_wifi_connect);
+  task_wifi_connect.enable();
 }
 
 void print_wifi_status() {

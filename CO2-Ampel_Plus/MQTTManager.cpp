@@ -64,8 +64,7 @@ void mqtt();
 Task task_mqtt(  //
     MQTT_LOOP_TASK_PERIOD_MS* TASK_MILLISECOND,
     -1,
-    mqtt,
-    &ts);
+    mqtt);
 
 void mqtt() {
   static MQTT_STATES state = MQTT_STATES::CONNECT;
@@ -94,8 +93,7 @@ void mqtt_send_value();
 Task task_mqtt_send_value(  //
     10 * TASK_MILLISECOND,
     -1,
-    mqtt_send_value,
-    &ts);
+    mqtt_send_value);
 
 void mqtt_send_value() {
   if (mqttClient.connected()) {
@@ -215,4 +213,10 @@ void mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
     config_set_values(cfg);
   }
+}
+
+void init_mqtt(Scheduler& scheduler) {
+  scheduler.addTask(task_mqtt_send_value);
+  scheduler.addTask(task_mqtt);
+  task_mqtt.enable();
 }

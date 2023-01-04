@@ -513,4 +513,9 @@ void serial_handler() {
   }
 }
 
-Task task_serial_handler(10 * TASK_MILLISECOND, -1, &serial_handler, &ts);
+Task task_serial_handler(10 * TASK_MILLISECOND, -1, &serial_handler);
+
+void init_serial(Scheduler& scheduler) {
+  scheduler.addTask(task_serial_handler);
+  task_serial_handler.enable();
+}

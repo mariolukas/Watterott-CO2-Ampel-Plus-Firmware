@@ -8,6 +8,7 @@
 
 bool wifi_is_connected();
 uint8_t get_wifi_status();
+void init_wifi_connect(Scheduler& scheduler);
 
 /*
 // TODO: AP mode disabled for now
